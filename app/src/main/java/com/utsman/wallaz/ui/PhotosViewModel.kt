@@ -16,7 +16,7 @@ class PhotosViewModel : BaseViewModel() {
 
     fun getPhotos(orderBy: String): LiveData<PagedList<Photos>> {
         photosSourceFactory = PhotosSourceFactory(disposable, orderBy)
-        return LivePagedListBuilder<String, Photos>(photosSourceFactory!!, configPaged(6)).build()
+        return LivePagedListBuilder<String, Photos>(photosSourceFactory!!, configPaged(2)).build()
     }
 
     fun getLoader(): LiveData<NetworkState> = Transformations.switchMap<PhotosDataSource, NetworkState>(

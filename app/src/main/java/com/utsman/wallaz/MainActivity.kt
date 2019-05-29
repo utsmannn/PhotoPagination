@@ -25,10 +25,9 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        window.decorView.setBackgroundColor(resources.getColor(R.color.colorAccent))
-        window.navigationBarColor = ContextCompat.getColor(this, R.color.colorPrimary)
         setContentView(R.layout.activity_main)
+
+        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
 
         val item1 = itemDrawer().withIdentifier(1)
                 .withName("All Photos")
@@ -65,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        //window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
     }
 
     private fun itemDrawer(): PrimaryDrawerItem = PrimaryDrawerItem()

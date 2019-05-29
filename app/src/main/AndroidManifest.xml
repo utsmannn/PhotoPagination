@@ -15,7 +15,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/TranslucentStatusBar"
+            android:theme="@style/AppTheme"
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -15,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/toolbar"
-            app:layout_scrollFlags="scroll|enterAlways|snap"/>
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            android:layout_marginTop="@dimen/statusbar_view_height"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -33,5 +35,11 @@
             android:clipToPadding="false"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/statusbar_view_height"
+        android:background="@color/tintBg"
+        android:translationZ="20dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

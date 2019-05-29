@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#3e3e3e</color>
     <color name="colorAccent">#ECECEC</color>
 
-    <color name="tintBg">#33FFFFFF</color>
+    <color name="tintBg">#33000000</color>
     <color name="tintMenu">#C0C0C0</color>
 </resources>

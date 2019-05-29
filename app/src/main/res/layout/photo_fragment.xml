@@ -19,12 +19,6 @@
         android:indeterminate="true"
         android:theme="@style/Widget.AppCompat.ProgressBar.Horizontal" />
 
-    <!--<View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@drawable/img_shadow_bottomsheet"
-        app:layout_anchor="@id/bottom_sheet_layout"/>-->
-
     <androidx.cardview.widget.CardView
         android:id="@+id/bottom_sheet_layout"
         android:layout_width="match_parent"
@@ -33,7 +27,7 @@
         android:orientation="vertical"
         android:padding="12dp"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="75dp"
+        app:behavior_peekHeight="135dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="12dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -108,5 +102,11 @@
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/statusbar_view_height"
+        android:background="@color/tintBg"
+        android:translationZ="20dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

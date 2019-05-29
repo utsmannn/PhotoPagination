@@ -35,6 +35,8 @@ class MainFragment : Fragment() {
         MainInjector.injectPhotosViewModel(this)
     }
 
+
+
     private val photoPagedAdapter = MainPagedAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,6 +45,7 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        gridLayoutManager = GridLayoutManager(context, 2)
 
         toolbar.title = "All Photos"
 
@@ -56,18 +59,9 @@ class MainFragment : Fragment() {
             mainActivity.openDrawer()
         }
 
-        gridLayoutManager = GridLayoutManager(context, 2)
+        if (!back) fetchData()
 
-
-        /*swipe_layout.apply {
-            isRefreshing = true
-            Handler().postDelayed({
-                fetchData()
-            }, 800)
-        }*/
-
-        fetchData()
-
+        swipe_layout.setProgressViewEndTarget(true, 400)
         swipe_layout.setOnRefreshListener {
             fetchData()
         }
@@ -82,18 +76,15 @@ class MainFragment : Fragment() {
     }
 
     private fun fetchData() {
-        if (!back) {
-            if (order != null) {
-                photoViewModel.getPhotos(order!!).observe(this, Observer { photos ->
-                    photoPagedAdapter.submitList(photos)
-                })
-            } else {
-                photoViewModel.getPhotos("latest").observe(this, Observer { photos ->
-                    photoPagedAdapter.submitList(photos)
-                })
-            }
+        if (order != null) {
+            photoViewModel.getPhotos(order!!).observe(this, Observer { photos ->
+                photoPagedAdapter.submitList(photos)
+            })
+        } else {
+            photoViewModel.getPhotos("latest").observe(this, Observer { photos ->
+                photoPagedAdapter.submitList(photos)
+            })
         }
-
         photoViewModel.getLoader().observe(this, Observer {networkState ->
             swipe_layout.isRefreshing = networkState == NetworkState.LOADING
         })
