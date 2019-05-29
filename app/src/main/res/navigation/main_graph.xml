@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.utsman.wallaz.MainFragment"
+        android:label="MainFragment">
+
+        <action android:id="@+id/toPhotoFragment"
+            app:destination="@+id/photoFragment"
+            app:launchSingleTop="false">
+
+            <argument android:name="photo"
+                app:argType="com.utsman.wallaz.data.Photos"/>
+
+        </action>
+
+    </fragment>
+
+    <action android:id="@+id/toMainFragment"
+        app:destination="@+id/mainFragment">
+        <argument android:name="order_by"
+            app:argType="string"
+            android:defaultValue="latest"/>
+    </action>
+
+    <fragment android:id="@+id/photoFragment"
+        android:name="com.utsman.wallaz.PhotoFragment"
+        android:label="PhotoFragment"/>
+
+
+
+</navigation>
