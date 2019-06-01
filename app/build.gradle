@@ -73,12 +73,12 @@ dependencies {
     // Download Manager
     implementation 'com.liulishuo.filedownloader:library:1.7.6'
 
-    // Permission
-    implementation 'com.karumi:dexter:5.0.0'
-
     // PhotoView
     //noinspection GradleDependency
     implementation 'com.github.chrisbanes:PhotoView:2.1.4'
+
+    // Worker Manager
+    implementation 'androidx.work:work-runtime-ktx:2.0.1'
 }
 
 androidExtensions {

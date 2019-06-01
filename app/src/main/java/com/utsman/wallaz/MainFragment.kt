@@ -1,7 +1,6 @@
 package com.utsman.wallaz
 
 import android.os.Bundle
-import android.os.Handler
 import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
@@ -35,8 +34,6 @@ class MainFragment : Fragment() {
         MainInjector.injectPhotosViewModel(this)
     }
 
-
-
     private val photoPagedAdapter = MainPagedAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -69,10 +66,9 @@ class MainFragment : Fragment() {
         main_recycler_view.layoutManager = gridLayoutManager
         main_recycler_view.adapter = photoPagedAdapter
 
-        mainActivity.onBackPressedDispatcher.addCallback {
+        /*mainActivity.onBackPressedDispatcher.addCallback {
             mainActivity.finish()
-        }
-
+        }*/
     }
 
     private fun fetchData() {
@@ -93,8 +89,10 @@ class MainFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        listState = main_recycler_view.layoutManager?.onSaveInstanceState()
-        outState.putParcelable("save_main_recycler_view_$order", listState)
+        if (main_recycler_view != null) {
+            listState = main_recycler_view.layoutManager?.onSaveInstanceState()
+            outState.putParcelable("save_main_recycler_view_$order", listState)
+        }
 
     }
 
