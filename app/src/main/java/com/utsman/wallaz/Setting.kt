@@ -77,9 +77,3 @@ enum class SetupType {
     DOWNLOAD,
     SHARE
 }
-
-enum class SheetStatus {
-    EXPANDED,
-    COLLAPSE,
-    HIDDEN
-}

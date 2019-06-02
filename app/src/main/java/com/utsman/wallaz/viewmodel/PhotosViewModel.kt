@@ -13,6 +13,7 @@ import com.utsman.wallaz.data.NetworkState
 import com.utsman.wallaz.data.Photos
 import com.utsman.wallaz.data.PhotosDataSource
 import com.utsman.wallaz.data.PhotosSourceFactory
+import com.utsman.wallaz.db.PhotoRoom
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 

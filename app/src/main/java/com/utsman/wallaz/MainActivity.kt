@@ -17,6 +17,7 @@ import androidx.navigation.findNavController
 import com.mikepenz.materialdrawer.Drawer
 import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.holder.DimenHolder
+import com.mikepenz.materialdrawer.model.DividerDrawerItem
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
 
 class MainActivity : AppCompatActivity() {
@@ -50,9 +51,16 @@ class MainActivity : AppCompatActivity() {
         val item3 = itemDrawer().withIdentifier(3)
             .withName("Collections")
 
+        val item4 = itemDrawer().withIdentifier(4)
+                .withName("Bookmark")
+                .withOnDrawerItemClickListener { view, position, drawerItem ->
+                    findNavController(R.id.main_host_fragment_app).navigate(R.id.toBookmarkFragment)
+                    false
+                }
+
         drawer = DrawerBuilder()
             .withActivity(this)
-            .addDrawerItems(item1, item2, item3)
+            .addDrawerItems(item1, item2, item3, DividerDrawerItem(), item4)
             .build()
 
         val view = LayoutInflater.from(this).inflate(R.layout.header_drawer, null)

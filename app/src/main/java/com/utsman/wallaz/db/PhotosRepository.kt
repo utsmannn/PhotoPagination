@@ -1,12 +1,12 @@
 package com.utsman.wallaz.db
 
-import com.utsman.wallaz.data.Photos
-
 class PhotosRepository private constructor(private val photoDao: PhotoDao) {
 
     fun getPhoto() = photoDao.getAllPhoto()
-    fun insertPhoto(photos: Photos) = photoDao.insert(photos)
-    fun deletePhoto(photos: Photos) = photoDao.remove(photos)
+    fun getPagedPhoto() = photoDao.getPagedPhoto()
+    fun insertPhoto(photoRoom: PhotoRoom) = photoDao.insert(photoRoom)
+    fun deletePhoto(photoRoom: PhotoRoom) = photoDao.remove(photoRoom)
+    fun checkPhoto(id: String) = photoDao.getPhoto(id)
 
     companion object {
         @Volatile private var instance: PhotosRepository? = null

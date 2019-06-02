@@ -1,0 +1,82 @@
+package com.utsman.wallaz.viewmodel
+
+import android.app.Application
+import android.util.Log
+import androidx.lifecycle.*
+import androidx.paging.DataSource
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
+import com.utsman.wallaz.configPaged
+import com.utsman.wallaz.data.Photos
+import com.utsman.wallaz.db.PhotoRoom
+import com.utsman.wallaz.db.PhotosRepository
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+
+class BookmarkViewModel(private val photosRepository: PhotosRepository) : ViewModel() {
+    private val photoBookmarked: MutableLiveData<List<PhotoRoom>> = MutableLiveData()
+
+    private val disposable = CompositeDisposable()
+    private val millis = System.currentTimeMillis()
+
+    init {
+        disposable.add(
+            photosRepository.getPhoto()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    photoBookmarked.postValue(it)
+                }
+        )
+    }
+
+    fun isPhotoExists(photo: Photos): LiveData<Boolean> {
+        val id = photo.id
+        val photoRoom = photosRepository.checkPhoto(id)
+        return Transformations.map(photoRoom) { it != null }
+    }
+
+    fun bookmarkPhoto(photo: Photos) {
+        val photoRoom = PhotoRoom(photo.id, photo.url.regular, millis)
+        disposable.add(
+            Completable.fromAction {
+                photosRepository.insertPhoto(photoRoom)
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
+        )
+    }
+
+    fun deletePhoto(photo: Photos) {
+        val photoRoom = PhotoRoom(photo.id, photo.url.regular, millis)
+        disposable.add(
+            Completable.fromAction {
+                photosRepository.deletePhoto(photoRoom)
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Log.i("anjay", "dele")
+                }, {
+                    Log.e("anjayyy", "gak")
+                })
+        )
+    }
+
+    fun getAllPhoto(): MutableLiveData<List<PhotoRoom>> {
+        return photoBookmarked
+    }
+
+    fun getAllPagedListPhoto(): LiveData<PagedList<PhotoRoom>> {
+        val factory: DataSource.Factory<Int, PhotoRoom> = photosRepository.getPagedPhoto()
+        return LivePagedListBuilder<Int, PhotoRoom>(factory, configPaged(2)).build()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposable.clear()
+    }
+}

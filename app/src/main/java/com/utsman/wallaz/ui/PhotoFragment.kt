@@ -6,9 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -24,6 +22,7 @@ import com.squareup.picasso.Picasso
 import com.utsman.wallaz.*
 import com.utsman.wallaz.data.Photos
 import com.utsman.wallaz.di.MainInjector
+import com.utsman.wallaz.di.RoomInjector
 import kotlinx.android.synthetic.main.photo_bottom_sheet.*
 import kotlinx.android.synthetic.main.photo_fragment.*
 import java.io.File
@@ -31,7 +30,6 @@ import java.lang.Exception
 
 class PhotoFragment : Fragment() {
 
-    //private var expanded = false
     private var setupType = SetupType.DOWNLOAD
     private lateinit var photo: Photos
 
@@ -41,6 +39,10 @@ class PhotoFragment : Fragment() {
 
     private val photoViewModel by lazy {
         MainInjector.injectPhotosViewModel(this)
+    }
+
+    private val roomViewModel by lazy {
+        RoomInjector.injectBookmarkViewModel(this, context!!)
     }
 
     private val file by lazy {
@@ -83,7 +85,8 @@ class PhotoFragment : Fragment() {
         }
 
         drag_indicator.setOnClickListener {
-            if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED || sheetBehavior.state == BottomSheetBehavior.STATE_HIDDEN) sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED
+                || sheetBehavior.state == BottomSheetBehavior.STATE_HIDDEN) sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             else sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
@@ -131,6 +134,19 @@ class PhotoFragment : Fragment() {
     }
 
     private fun setupBtn() {
+
+        roomViewModel.isPhotoExists(photo).observe(this, Observer { exists ->
+            btn_bookmark.setOnClickListener {
+                if (!exists) {
+                    roomViewModel.bookmarkPhoto(photo)
+                    Toast.makeText(context, "bookmark", Toast.LENGTH_SHORT).show()
+                } else {
+                    roomViewModel.deletePhoto(photo)
+                    Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
         btn_download.setOnClickListener {
             setupType = SetupType.DOWNLOAD
             downloadFile()
@@ -144,10 +160,6 @@ class PhotoFragment : Fragment() {
         btn_share.setOnClickListener {
             setupType = SetupType.SHARE
             downloadFile()
-        }
-
-        btn_bookmark.setOnClickListener {
-            Toast.makeText(context, "bookmark", Toast.LENGTH_SHORT).show()
         }
     }
 
