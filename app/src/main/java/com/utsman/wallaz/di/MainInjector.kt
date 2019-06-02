@@ -4,8 +4,7 @@ import android.app.Activity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.utsman.wallaz.MainActivity
-import com.utsman.wallaz.ui.MainPagedAdapter
-import com.utsman.wallaz.ui.PhotosViewModel
+import com.utsman.wallaz.viewmodel.PhotosViewModel
 
 object MainInjector {
 

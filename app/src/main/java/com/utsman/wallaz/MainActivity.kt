@@ -1,12 +1,17 @@
 package com.utsman.wallaz
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import com.mikepenz.materialdrawer.Drawer
@@ -16,6 +21,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
 
 class MainActivity : AppCompatActivity() {
 
+    private val PERMISSION_REQUEST = 1
     private lateinit var drawer: Drawer
 
     @SuppressLint("InflateParams")
@@ -23,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupWindow()
+        setupPermission()
 
         val item1 = itemDrawer().withIdentifier(1)
             .withName("All Photos")
@@ -65,7 +72,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun itemDrawer(): PrimaryDrawerItem = PrimaryDrawerItem()
         .withIconTintingEnabled(true)
         .withIconColorRes(R.color.colorPrimary)
@@ -75,11 +81,34 @@ class MainActivity : AppCompatActivity() {
         .withSelectedBackgroundAnimated(true)
 
     fun openDrawer() = drawer.openDrawer()
-
     fun isDrawerOpen(): Boolean = drawer.isDrawerOpen
+    fun closeDrawer() = drawer.closeDrawer()
 
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(R.id.main_host_fragment_app).navigateUp()
+    }
+
+    private fun setupPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), PERMISSION_REQUEST)
+        } else {
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            PERMISSION_REQUEST -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                return
+            }
+
+            else -> Toast.makeText(this, "ignore", Toast.LENGTH_SHORT).show()
+        }
     }
 
     /*override fun onUserLeaveHint() {

@@ -37,13 +37,29 @@ data class User(@SerializedName("id") val id: String,
                 @SerializedName("location") val location: String) : Parcelable
 
 @Parcelize
+data class Exif(@SerializedName("make") val make: String,
+                @SerializedName("model") val model: String,
+                @SerializedName("exposure_time") val exposureTime: String,
+                @SerializedName("aperture") val aperture: String,
+                @SerializedName("focal_length") val focalLength: String,
+                @SerializedName("iso") val iso: Long) : Parcelable
+
+@Parcelize
+data class PhotoLocation(@SerializedName("title") val title: String,
+                         @SerializedName("name") val name: String,
+                         @SerializedName("city") val city: String,
+                         @SerializedName("country") val country: String) : Parcelable
+
+@Parcelize
 data class Photos(@SerializedName("id") val id: String,
                   @SerializedName("created_at") val createdAt: String,
-                  @SerializedName("width") val w: String,
-                  @SerializedName("height") val h: String,
+                  @SerializedName("width") val w: Int,
+                  @SerializedName("height") val h: Int,
                   @SerializedName("color") val color: String,
                   @SerializedName("alt_description") val description: String?,
                   @SerializedName("urls") val url: Urls,
                   @SerializedName("links") val links: Links,
                   @SerializedName("user") val user: User,
-                  @SerializedName("likes") val likes: Long) : Parcelable
+                  @SerializedName("likes") val likes: Long,
+                  @SerializedName("exif") val exif: Exif?,
+                  @SerializedName("location") val location: PhotoLocation?) : Parcelable

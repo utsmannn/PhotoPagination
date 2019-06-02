@@ -1,4 +1,4 @@
-package com.utsman.wallaz
+package com.utsman.wallaz.ui
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -10,9 +10,10 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.utsman.wallaz.MainActivity
+import com.utsman.wallaz.R
 import com.utsman.wallaz.data.NetworkState
 import com.utsman.wallaz.di.MainInjector
-import com.utsman.wallaz.ui.MainPagedAdapter
 import kotlinx.android.synthetic.main.main_fragment.*
 
 class MainFragment : Fragment() {
@@ -66,9 +67,10 @@ class MainFragment : Fragment() {
         main_recycler_view.layoutManager = gridLayoutManager
         main_recycler_view.adapter = photoPagedAdapter
 
-        /*mainActivity.onBackPressedDispatcher.addCallback {
-            mainActivity.finish()
-        }*/
+        mainActivity.onBackPressedDispatcher.addCallback {
+            if (mainActivity.isDrawerOpen()) mainActivity.closeDrawer()
+            else mainActivity.finish()
+        }
     }
 
     private fun fetchData() {

@@ -6,4 +6,5 @@
 
     <color name="tintBg">#33000000</color>
     <color name="tintMenu">#C0C0C0</color>
+    <color name="statusBarBg">#4DFFFFFF</color>
 </resources>

@@ -45,7 +45,7 @@ class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         Picasso.get().load(photo.url.regular).into(photo_image_view)
 
         card_container.setOnClickListener {
-            val bundle = bundleOf("photo" to photo)
+            val bundle = bundleOf("photo_id" to photo.id)
             findNavController().navigate(R.id.toPhotoFragment, bundle)
         }
     }

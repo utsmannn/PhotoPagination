@@ -14,9 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".LauncherConfigActivity"
+            android:name=".MainActivity"
             android:theme="@style/AppTheme"
             android:configChanges="orientation|screenSize">
             <intent-filter>
@@ -25,9 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"
-            android:theme="@style/AppTheme"/>
-        <activity android:name=".IntentHelperActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

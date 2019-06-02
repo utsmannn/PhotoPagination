@@ -1,61 +1,68 @@
-package com.utsman.wallaz
+package com.utsman.wallaz.ui
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.view.*
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import com.utsman.wallaz.*
 import com.utsman.wallaz.data.Photos
 import com.utsman.wallaz.di.MainInjector
+import kotlinx.android.synthetic.main.photo_bottom_sheet.*
 import kotlinx.android.synthetic.main.photo_fragment.*
 import java.io.File
 import java.lang.Exception
 
 class PhotoFragment : Fragment() {
 
-    private var expanded = false
+    //private var expanded = false
     private var setupType = SetupType.DOWNLOAD
+    private lateinit var photo: Photos
 
     private val mainActivity by lazy {
         MainInjector.injectMainActivity(activity as MainActivity)
     }
 
-    private val photo by lazy {
-        arguments?.getParcelable("photo") as Photos
+    private val photoViewModel by lazy {
+        MainInjector.injectPhotosViewModel(this)
     }
 
     private val file by lazy {
-        File(Environment.getExternalStorageDirectory(), "/.Wallaz/${photo.id}.jpg")
+        File(Environment.getExternalStorageDirectory(), "/Wallaz/${photo.id}.jpg")
     }
 
     private val sheetBehavior by lazy {
         BottomSheetBehavior.from(bottom_sheet_layout)
     }
 
+    private val textShare by lazy {
+        "Photo by ${photo.user.name}, get on Unsplash! \n${photo.links.html} \n\nSend from Wallaz - Amazing photos for you!"
+    }
+
     private val onDownloadComplete = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (setupType) {
-                SetupType.WALLPAPER -> {
-                    setupWallpaper(context, file)
-                }
-                else -> {
-                }
+                SetupType.WALLPAPER -> setupWallpaper(context, file)
+                SetupType.SHARE -> setupShare(context, file, textShare)
+                else -> {}
             }
         }
-
     }
 
     override fun onStart() {
@@ -69,57 +76,58 @@ class PhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-
-        Picasso.get().load(photo.url.regular).into(photo_image_view, object : Callback {
-            override fun onSuccess() {
-                progress_horizontal.visibility = View.GONE
-            }
-
-            override fun onError(e: Exception?) {
-                progress_horizontal.visibility = View.GONE
-            }
-
-        })
+        setupContent()
 
         photo_image_view.setOnScaleChangeListener { scaleFactor, focusX, focusY ->
-            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
 
-        sheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onSlide(bottomSheet: View, offset: Float) {
-
-            }
-
-            @SuppressLint("SwitchIntDef")
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> expanded = false
-                    BottomSheetBehavior.STATE_EXPANDED -> expanded = true
-                }
-            }
-
-        })
-
-        drag_view.setOnClickListener {
-            if (expanded) sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        drag_indicator.setOnClickListener {
+            if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED || sheetBehavior.state == BottomSheetBehavior.STATE_HIDDEN) sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             else sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
         mainActivity.onBackPressedDispatcher.addCallback {
-            if (expanded) sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            else {
-                try {
+            when {
+                sheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED -> {
+                    sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+                sheetBehavior.state == BottomSheetBehavior.STATE_HIDDEN -> {
+                    sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+                else -> try {
                     findNavController().popBackStack()
                 } catch (e: Exception) {
-                    findNavController().navigateUp()
+                    Handler().postDelayed({
+                        findNavController().popBackStack()
+                    }, 1000)
                 }
             }
         }
+    }
 
-        setupBottomSheetContent()
-        setupBtn()
+    private fun setupContent() {
+        sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        photoViewModel.getPhotoById(arguments?.getString("photo_id")).observe(this, Observer { photo ->
+            this.photo = photo
+
+            Picasso.get().load(photo.url.regular).into(photo_image_view, object : Callback {
+                override fun onSuccess() {
+                    progress_horizontal.visibility = View.GONE
+                    Handler().postDelayed({
+                        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    }, 800)
+                }
+
+                override fun onError(e: Exception?) {
+                    progress_horizontal.visibility = View.GONE
+                }
+
+            })
+
+            setupBottomSheetContent()
+            setupBtn()
+        })
     }
 
     private fun setupBtn() {
@@ -132,6 +140,15 @@ class PhotoFragment : Fragment() {
             setupType = SetupType.WALLPAPER
             downloadFile()
         }
+
+        btn_share.setOnClickListener {
+            setupType = SetupType.SHARE
+            downloadFile()
+        }
+
+        btn_bookmark.setOnClickListener {
+            Toast.makeText(context, "bookmark", Toast.LENGTH_SHORT).show()
+        }
     }
 
     @SuppressLint("RestrictedApi")
@@ -142,12 +159,11 @@ class PhotoFragment : Fragment() {
         val request = DownloadManager.Request(Uri.parse(linkUri))
             .setTitle("Photo by ${photo.user.name}")
             .setDescription("Downloading")
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setDestinationUri(fileUri)
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
             .setVisibleInDownloadsUi(true)
-
         request.allowScanningByMediaScanner()
 
         val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
@@ -156,17 +172,8 @@ class PhotoFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun setupBottomSheetContent() {
-        text_author.text = "Photo by ${photo.user.name}"
-        text_location.text = photo.user.location
-
-        text_author.hideIfTextEmpty()
-        text_location.hideIfTextEmpty()
-    }
-
-    private fun sendToIntentHelper(photoId: String) {
-        val intent = Intent(context, IntentHelperActivity::class.java)
-        intent.putExtra("id", photoId)
-        startActivity(intent)
+        text_author.textWithCheckEmptyHide("Photo by ${photo.user.name}")
+        text_location.textWithCheckEmptyHide(photo.location?.title)
     }
 
     override fun onDestroy() {

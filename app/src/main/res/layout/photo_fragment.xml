@@ -9,7 +9,7 @@
         android:id="@+id/photo_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"/>
 
     <ProgressBar
         android:id="@+id/progress_horizontal"
@@ -17,96 +17,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminate="true"
-        android:theme="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+        android:theme="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/bottom_sheet_layout"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:background="@color/colorAccent"
-        android:orientation="vertical"
-        android:padding="12dp"
-        app:behavior_hideable="true"
-        app:behavior_peekHeight="135dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="12dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-        <ImageView
-            android:id="@+id/drag_indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|top"
-            android:src="@drawable/ic_drag_icon"
-            tools:ignore="ContentDescription" />
-
-        <View
-            android:id="@+id/drag_view"
-            android:layout_width="match_parent"
-            android:layout_height="100dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:id="@+id/text_author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/text_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_location_pin"
-                android:drawablePadding="4dp"
-                android:gravity="center" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/btn_download"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
-                    android:src="@drawable/ic_download"
-                    app:fabSize="normal" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/btn_set_wallpaper"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
-                    android:src="@drawable/ic_wallpaper"
-                    app:fabSize="normal" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/btn_share"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
-                    android:src="@drawable/ic_share"
-                    app:fabSize="normal" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
+    <include layout="@layout/photo_bottom_sheet"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/statusbar_view_height"
-        android:background="@color/tintBg"
+        android:background="@color/statusBarBg"
         android:translationZ="20dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

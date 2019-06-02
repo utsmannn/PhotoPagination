@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.utsman.wallaz.MainFragment"
+        android:name="com.utsman.wallaz.ui.MainFragment"
         android:label="MainFragment">
 
         <action android:id="@+id/toPhotoFragment"
@@ -28,7 +28,7 @@
     </action>
 
     <fragment android:id="@+id/photoFragment"
-        android:name="com.utsman.wallaz.PhotoFragment"
+        android:name="com.utsman.wallaz.ui.PhotoFragment"
         android:label="PhotoFragment"/>
 
 

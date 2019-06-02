@@ -1,4 +1,4 @@
-package com.utsman.wallaz.ui
+package com.utsman.wallaz.viewmodel
 
 import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable

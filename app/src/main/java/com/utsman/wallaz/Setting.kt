@@ -21,6 +21,16 @@ fun TextView.hideIfTextEmpty() {
     else View.VISIBLE
 }
 
+fun TextView.textWithCheckEmptyHide(content: String?) {
+    if (content.isNullOrEmpty()) visibility = View.GONE
+    else text = content
+}
+
+fun TextView.textWithCheckEmptySetDefaut(content: String?, default: String) {
+    text = if (content.isNullOrEmpty()) default
+    else content
+}
+
 fun getFileUri(context: Context, file: File): Uri {
     return FileProvider.getUriForFile(context,
         "com.utsman.wallaz.fileprovider", file)
@@ -46,7 +56,30 @@ fun setupWallpaper(context: Context?, file: File) {
     }
 }
 
+fun setupShare(context: Context?, file: File, text: String) {
+    if (context != null) {
+        val uri = getFileUri(context, file)
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_STREAM, uri)
+            setDataAndType(uri, context.contentResolver.getType(uri))
+            putExtra(Intent.EXTRA_TEXT, text)
+            type = "image/*"
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(Intent.createChooser(shareIntent, "Choose app"))
+    }
+}
+
 enum class SetupType {
     WALLPAPER,
-    DOWNLOAD
+    DOWNLOAD,
+    SHARE
+}
+
+enum class SheetStatus {
+    EXPANDED,
+    COLLAPSE,
+    HIDDEN
 }
