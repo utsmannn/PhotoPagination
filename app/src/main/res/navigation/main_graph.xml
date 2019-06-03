@@ -32,7 +32,17 @@
 
     <fragment android:id="@+id/photoFragment"
         android:name="com.utsman.wallaz.ui.fragment.PhotoFragment"
-        android:label="PhotoFragment"/>
+        android:label="PhotoFragment">
+
+        <action android:id="@+id/toSearchFragmentFromPhoto"
+            app:destination="@+id/searchFragment"
+            app:launchSingleTop="false">
+
+            <argument android:name="query_argument"
+                app:argType="string"/>
+        </action>
+
+    </fragment>
 
     <fragment android:id="@+id/bookmarkFragment"
         android:name="com.utsman.wallaz.ui.fragment.BookmarkFragment"
@@ -50,6 +60,13 @@
                 app:destination="@+id/photoFragment"
                 app:launchSingleTop="false"/>
     </fragment>
+
+    <!--<action android:id="@+id/toSearchFromChip"
+            app:destination="@id/searchFragment"
+            app:launchSingleTop="false">
+        <argument android:name="query_argument"
+                  app:argType="string"/>
+    </action>-->
 
 
 

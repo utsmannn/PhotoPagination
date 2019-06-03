@@ -60,7 +60,7 @@ class PhotosDataSource(private val disposable: CompositeDisposable, private val 
                         .doOnNext {
                             nextPage++
                         }
-                        .delay(600, TimeUnit.MILLISECONDS)
+                        .delay(300, TimeUnit.MILLISECONDS)
                         .subscribe({ photos ->
                             callback.onResult(photos)
                             networkState.postValue(NetworkState.LOADED)

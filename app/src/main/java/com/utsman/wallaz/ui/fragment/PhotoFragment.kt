@@ -14,8 +14,10 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -173,6 +175,11 @@ class PhotoFragment : Fragment() {
                 chip.text = tag.title
 
                 chips_group.addView(chip)
+
+                chip.setOnClickListener {
+                    val bundle = bundleOf("query_argument" to tag.title)
+                    findNavController().navigate(R.id.toSearchFragmentFromPhoto, bundle)
+                }
             }
         }
     }

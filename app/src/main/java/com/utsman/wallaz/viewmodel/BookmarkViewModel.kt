@@ -14,8 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class BookmarkViewModel(private val photosRepository: PhotosRepository) : ViewModel() {
-    private val disposable = CompositeDisposable()
+class BookmarkViewModel(private val photosRepository: PhotosRepository) : BaseViewModel() {
     private val millis = System.currentTimeMillis()
 
     fun isPhotoExists(photo: Photos): LiveData<Boolean> {
@@ -55,10 +54,5 @@ class BookmarkViewModel(private val photosRepository: PhotosRepository) : ViewMo
     fun getAllPagedListPhoto(): LiveData<PagedList<PhotoRoom>> {
         val factory: DataSource.Factory<Int, PhotoRoom> = photosRepository.getPagedPhoto()
         return LivePagedListBuilder<Int, PhotoRoom>(factory, configPaged(2)).build()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disposable.clear()
     }
 }

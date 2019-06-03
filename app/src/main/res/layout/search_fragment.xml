@@ -39,6 +39,13 @@
         android:padding="6dp"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chips_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/statusbar_view_height"

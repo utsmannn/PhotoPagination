@@ -53,7 +53,6 @@ class SearchDataSource(private val disposable: CompositeDisposable, private val 
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext { nextPage++ }
-                        .delay(600, TimeUnit.MILLISECONDS)
                         .subscribe({ result ->
                             callback.onResult(result.results)
                             networkState.postValue(NetworkState.LOADED)

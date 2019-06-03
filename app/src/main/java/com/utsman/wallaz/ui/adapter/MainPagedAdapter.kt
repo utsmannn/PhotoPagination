@@ -34,7 +34,6 @@ class MainPagedAdapter : PagedListAdapter<Photos, MainViewHolder>(photoDiffUtil)
             override fun areItemsTheSame(oldItem: Photos, newItem: Photos): Boolean = oldItem.id == newItem.id
 
             override fun areContentsTheSame(oldItem: Photos, newItem: Photos): Boolean = oldItem == newItem
-
         }
     }
 }

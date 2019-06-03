@@ -16,6 +16,7 @@ import com.utsman.wallaz.MainActivity
 import com.utsman.wallaz.R
 import com.utsman.wallaz.data.NetworkState
 import com.utsman.wallaz.di.MainInjector
+import com.utsman.wallaz.di.SearchInjector
 import com.utsman.wallaz.ui.adapter.MainPagedAdapter
 import kotlinx.android.synthetic.main.main_fragment.*
 
