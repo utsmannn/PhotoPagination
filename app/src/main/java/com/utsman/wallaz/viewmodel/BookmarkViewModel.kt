@@ -1,6 +1,5 @@
 package com.utsman.wallaz.viewmodel
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.DataSource
@@ -16,21 +15,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class BookmarkViewModel(private val photosRepository: PhotosRepository) : ViewModel() {
-    private val photoBookmarked: MutableLiveData<List<PhotoRoom>> = MutableLiveData()
-
     private val disposable = CompositeDisposable()
     private val millis = System.currentTimeMillis()
-
-    init {
-        disposable.add(
-            photosRepository.getPhoto()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    photoBookmarked.postValue(it)
-                }
-        )
-    }
 
     fun isPhotoExists(photo: Photos): LiveData<Boolean> {
         val id = photo.id
@@ -64,10 +50,6 @@ class BookmarkViewModel(private val photosRepository: PhotosRepository) : ViewMo
                     Log.e("anjayyy", "gak")
                 })
         )
-    }
-
-    fun getAllPhoto(): MutableLiveData<List<PhotoRoom>> {
-        return photoBookmarked
     }
 
     fun getAllPagedListPhoto(): LiveData<PagedList<PhotoRoom>> {

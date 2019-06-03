@@ -1,4 +1,4 @@
-package com.utsman.wallaz.ui
+package com.utsman.wallaz.ui.fragment
 
 import android.annotation.SuppressLint
 import android.app.DownloadManager
@@ -10,19 +10,25 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.chip.Chip
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.utsman.wallaz.*
+import com.utsman.wallaz.data.NetworkState
 import com.utsman.wallaz.data.Photos
 import com.utsman.wallaz.di.MainInjector
 import com.utsman.wallaz.di.RoomInjector
+import com.utsman.wallaz.ui.CameraInfo
+import kotlinx.android.synthetic.main.error_layout.*
 import kotlinx.android.synthetic.main.photo_bottom_sheet.*
 import kotlinx.android.synthetic.main.photo_fragment.*
 import java.io.File
@@ -116,7 +122,6 @@ class PhotoFragment : Fragment() {
 
             Picasso.get().load(photo.url.regular).into(photo_image_view, object : Callback {
                 override fun onSuccess() {
-                    progress_horizontal.visibility = View.GONE
                     Handler().postDelayed({
                         sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     }, 800)
@@ -130,12 +135,72 @@ class PhotoFragment : Fragment() {
 
             setupBottomSheetContent()
             setupBtn()
+            setupCameraInfo()
+            setupTag()
+        })
+
+        photoViewModel.getLoaderById().observe(this, Observer {networkState ->
+            Log.i("AJIANG", networkState.msg)
+
+            /*if (networkState == NetworkState.FAILED) error_layout.visibility = View.VISIBLE
+            else error_layout.visibility = View.GONE*/
+
+            when (networkState) {
+                NetworkState.LOADED -> {
+                    progress_horizontal.visibility = View.GONE
+                    error_layout.visibility = View.GONE
+                }
+                NetworkState.LOADING -> {
+                    progress_horizontal.visibility = View.VISIBLE
+                    error_layout.visibility = View.GONE
+                }
+                NetworkState.FAILED -> {
+                    progress_horizontal.visibility = View.GONE
+                    error_layout.visibility = View.VISIBLE
+                    bottom_sheet_layout.visibility = View.GONE
+                    sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+            }
         })
     }
 
-    private fun setupBtn() {
+    private fun setupTag() {
 
+        val tags = photo.tags
+        if (tags != null) {
+            for (tag in tags) {
+                val chip = Chip(chips_group.context)
+                chip.text = tag.title
+
+                chips_group.addView(chip)
+            }
+        }
+    }
+
+    private fun setupCameraInfo() {
+        val cameraInfos: MutableList<CameraInfo> = mutableListOf()
+        cameraInfos.apply {
+            add(CameraInfo("Camera Make", photo.exif?.make))
+            add(CameraInfo("Camera Model", photo.exif?.model))
+            add(CameraInfo("Focal Length", photo.exif?.focalLength))
+            add(CameraInfo("Aperture", photo.exif?.aperture, "ƒ/"))
+            add(CameraInfo("Shutter Speed", photo.exif?.exposureTime))
+            add(CameraInfo("ISO", photo.exif?.iso.toString()))
+            add(CameraInfo("Dimension", "${photo.w} x ${photo.h}"))
+        }
+
+        camera_info_recycler_view.layoutManager = GridLayoutManager(context, 3)
+        camera_info_recycler_view.adapter = CameraInfoAdapter(cameraInfos)
+    }
+
+    private fun setupBtn() {
         roomViewModel.isPhotoExists(photo).observe(this, Observer { exists ->
+            if (!exists) {
+                btn_bookmark.setImageDrawable(resources.getDrawable(R.drawable.ic_bookmark_border))
+            } else {
+                btn_bookmark.setImageDrawable(resources.getDrawable(R.drawable.ic_bookmark))
+            }
+
             btn_bookmark.setOnClickListener {
                 if (!exists) {
                     roomViewModel.bookmarkPhoto(photo)

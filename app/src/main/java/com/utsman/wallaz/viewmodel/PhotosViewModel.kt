@@ -11,9 +11,8 @@ import com.utsman.wallaz.BuildConfig
 import com.utsman.wallaz.configPaged
 import com.utsman.wallaz.data.NetworkState
 import com.utsman.wallaz.data.Photos
-import com.utsman.wallaz.data.PhotosDataSource
-import com.utsman.wallaz.data.PhotosSourceFactory
-import com.utsman.wallaz.db.PhotoRoom
+import com.utsman.wallaz.data.paged.PhotosDataSource
+import com.utsman.wallaz.data.factory.PhotosSourceFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -52,8 +51,7 @@ class PhotosViewModel : BaseViewModel() {
                             loader.postValue(NetworkState.LOADED)
 
                         }, {
-                            loader.postValue(NetworkState.LOADED)
-                            //Log.i("ANJAY", it.localizedMessage)
+                            loader.postValue(NetworkState.FAILED)
                         })
         )
 

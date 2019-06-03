@@ -21,6 +21,8 @@
 
     <include layout="@layout/photo_bottom_sheet"/>
 
+    <include layout="@layout/error_layout"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/statusbar_view_height"

@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
                     findNavController(R.id.main_host_fragment_app).navigate(R.id.toBookmarkFragment)
                     false
                 }
+                .withSelectable(false)
 
         drawer = DrawerBuilder()
             .withActivity(this)
@@ -91,6 +92,7 @@ class MainActivity : AppCompatActivity() {
     fun openDrawer() = drawer.openDrawer()
     fun isDrawerOpen(): Boolean = drawer.isDrawerOpen
     fun closeDrawer() = drawer.closeDrawer()
+    fun toSearchFragment() = findNavController(R.id.main_host_fragment_app).navigate(R.id.toSearchFragment)
 
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(R.id.main_host_fragment_app).navigateUp()

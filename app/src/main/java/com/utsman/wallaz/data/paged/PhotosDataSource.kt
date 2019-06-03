@@ -1,10 +1,12 @@
-package com.utsman.wallaz.data
+package com.utsman.wallaz.data.paged
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.ItemKeyedDataSource
 import com.rx2androidnetworking.Rx2AndroidNetworking
 import com.utsman.wallaz.BuildConfig
+import com.utsman.wallaz.data.NetworkState
+import com.utsman.wallaz.data.Photos
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -58,7 +60,7 @@ class PhotosDataSource(private val disposable: CompositeDisposable, private val 
                         .doOnNext {
                             nextPage++
                         }
-                        .delay(1000, TimeUnit.MILLISECONDS)
+                        .delay(600, TimeUnit.MILLISECONDS)
                         .subscribe({ photos ->
                             callback.onResult(photos)
                             networkState.postValue(NetworkState.LOADED)

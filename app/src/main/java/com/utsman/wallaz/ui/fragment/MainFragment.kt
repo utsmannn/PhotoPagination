@@ -1,4 +1,4 @@
-package com.utsman.wallaz.ui
+package com.utsman.wallaz.ui.fragment
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -6,21 +6,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.utsman.wallaz.MainActivity
 import com.utsman.wallaz.R
 import com.utsman.wallaz.data.NetworkState
 import com.utsman.wallaz.di.MainInjector
+import com.utsman.wallaz.ui.adapter.MainPagedAdapter
 import kotlinx.android.synthetic.main.main_fragment.*
 
 class MainFragment : Fragment() {
 
     private var listState: Parcelable? = null
     private lateinit var gridLayoutManager: GridLayoutManager
-
     private var back = false
 
     private val order by lazy {
@@ -45,8 +47,6 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         gridLayoutManager = GridLayoutManager(context, 2)
 
-        toolbar.title = "All Photos"
-
         when (order) {
             "latest" -> toolbar.title = "All Photos"
             "popular" -> toolbar.title = "Popular Photos"
@@ -70,6 +70,15 @@ class MainFragment : Fragment() {
         mainActivity.onBackPressedDispatcher.addCallback {
             if (mainActivity.isDrawerOpen()) mainActivity.closeDrawer()
             else mainActivity.finish()
+        }
+
+
+        toolbar.title = "All Photos"
+        toolbar.inflateMenu(R.menu.main_menu)
+        val menu = toolbar.menu
+        menu.findItem(R.id.search_photo).setOnMenuItemClickListener {
+            mainActivity.toSearchFragment()
+            true
         }
     }
 

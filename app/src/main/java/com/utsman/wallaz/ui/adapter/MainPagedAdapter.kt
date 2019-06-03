@@ -1,4 +1,4 @@
-package com.utsman.wallaz.ui
+package com.utsman.wallaz.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View

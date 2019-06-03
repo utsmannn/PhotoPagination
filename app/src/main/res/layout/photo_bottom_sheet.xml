@@ -4,28 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_sheet_layout"
     android:layout_width="match_parent"
-    android:layout_height="500dp"
+    android:layout_height="wrap_content"
     android:background="@color/colorAccent"
+    android:clickable="true"
+    android:focusable="true"
     android:orientation="vertical"
     android:padding="12dp"
+    android:translationZ="10dp"
     app:behavior_hideable="true"
     app:behavior_peekHeight="135dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="12dp"
-    android:translationZ="10dp"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    android:clickable="true"
-    android:focusable="true">
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <ImageView
         android:id="@+id/drag_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|top"
-        android:src="@drawable/ic_drag_icon"
-        tools:ignore="ContentDescription"
         android:clickable="true"
-        android:focusable="true"/>
+        android:focusable="true"
+        android:src="@drawable/ic_drag_icon"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/text_location"
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_location_pin"
             android:drawablePadding="4dp"
-            android:gravity="center"/>
+            android:gravity="center" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -88,6 +88,31 @@
                 app:fabSize="normal" />
 
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:background="@color/dividerColor" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/camera_info_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!--<androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" />-->
+
+        <com.google.android.material.chip.ChipGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chips_group"
+            android:layout_marginTop="12dp"/>
+
 
     </LinearLayout>
 

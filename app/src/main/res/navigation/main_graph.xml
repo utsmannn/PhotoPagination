@@ -7,17 +7,16 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.utsman.wallaz.ui.MainFragment"
+        android:name="com.utsman.wallaz.ui.fragment.MainFragment"
         android:label="MainFragment">
 
         <action android:id="@+id/toPhotoFragment"
             app:destination="@+id/photoFragment"
-            app:launchSingleTop="false">
+            app:launchSingleTop="false"/>
 
-            <argument android:name="photo"
-                app:argType="com.utsman.wallaz.data.Photos"/>
-
-        </action>
+        <action android:id="@+id/toSearchFragment"
+            app:destination="@+id/searchFragment"
+            app:launchSingleTop="false"/>
 
     </fragment>
 
@@ -32,21 +31,24 @@
         app:destination="@id/bookmarkFragment"/>
 
     <fragment android:id="@+id/photoFragment"
-        android:name="com.utsman.wallaz.ui.PhotoFragment"
+        android:name="com.utsman.wallaz.ui.fragment.PhotoFragment"
         android:label="PhotoFragment"/>
 
     <fragment android:id="@+id/bookmarkFragment"
-        android:name="com.utsman.wallaz.ui.BookmarkFragment"
+        android:name="com.utsman.wallaz.ui.fragment.BookmarkFragment"
         tools:layout="BookmarkFragment">
 
         <action android:id="@+id/toPhotoFragmentBookmark"
             app:destination="@+id/photoFragment"
-            app:launchSingleTop="false">
+            app:launchSingleTop="false"/>
+    </fragment>
 
-            <argument android:name="photo"
-                app:argType="com.utsman.wallaz.data.Photos"/>
-
-        </action>
+    <fragment android:id="@+id/searchFragment"
+        android:name="com.utsman.wallaz.ui.fragment.SearchFragment"
+        android:label="SearchFragment">
+        <action android:id="@+id/toPhotoFragment"
+                app:destination="@+id/photoFragment"
+                app:launchSingleTop="false"/>
     </fragment>
 
 

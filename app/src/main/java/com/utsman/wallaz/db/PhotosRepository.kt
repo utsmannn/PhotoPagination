@@ -2,7 +2,6 @@ package com.utsman.wallaz.db
 
 class PhotosRepository private constructor(private val photoDao: PhotoDao) {
 
-    fun getPhoto() = photoDao.getAllPhoto()
     fun getPagedPhoto() = photoDao.getPagedPhoto()
     fun insertPhoto(photoRoom: PhotoRoom) = photoDao.insert(photoRoom)
     fun deletePhoto(photoRoom: PhotoRoom) = photoDao.remove(photoRoom)

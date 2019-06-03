@@ -6,8 +6,13 @@ import android.net.Uri
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.FileProvider
 import androidx.paging.PagedList
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.io.File
 
 fun configPaged(size: Int): PagedList.Config = PagedList.Config.Builder()
@@ -26,9 +31,20 @@ fun TextView.textWithCheckEmptyHide(content: String?) {
     else text = content
 }
 
-fun TextView.textWithCheckEmptySetDefaut(content: String?, default: String) {
-    text = if (content.isNullOrEmpty()) default
-    else content
+fun TextView.textWithCheckEmptySetDefaultOrNol(content: String?, default: String) {
+    text = when {
+        content.isNullOrEmpty() -> default
+        content == "0" -> default
+        else -> content
+    }
+}
+
+fun TextView.textWithCheckEmptySetDefaultOrNolOrUnique(content: String?, default: String, uniqueChar: String?) {
+    text = when {
+        content.isNullOrEmpty() && !uniqueChar.isNullOrEmpty() -> default
+        content == "0" -> default
+        else -> "$uniqueChar$content"
+    }
 }
 
 fun getFileUri(context: Context, file: File): Uri {

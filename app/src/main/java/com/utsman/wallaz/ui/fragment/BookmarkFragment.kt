@@ -1,4 +1,4 @@
-package com.utsman.wallaz.ui
+package com.utsman.wallaz.ui.fragment
 
 import android.os.Bundle
 import android.os.Handler
@@ -7,17 +7,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.utsman.wallaz.MainActivity
 import com.utsman.wallaz.R
 import com.utsman.wallaz.di.MainInjector
 import com.utsman.wallaz.di.RoomInjector
+import com.utsman.wallaz.ui.adapter.BookmarkPagedAdapter
 import kotlinx.android.synthetic.main.main_fragment.*
 
 class BookmarkFragment : Fragment() {
@@ -42,7 +41,7 @@ class BookmarkFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbar.title = "All Photos"
+        toolbar.title = "Bookmark"
 
         toolbar.navigationIcon = resources.getDrawable(R.drawable.ic_nav)
         toolbar.setNavigationOnClickListener {

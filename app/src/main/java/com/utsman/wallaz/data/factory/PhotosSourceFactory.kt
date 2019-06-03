@@ -1,7 +1,9 @@
-package com.utsman.wallaz.data
+package com.utsman.wallaz.data.factory
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
+import com.utsman.wallaz.data.Photos
+import com.utsman.wallaz.data.paged.PhotosDataSource
 import io.reactivex.disposables.CompositeDisposable
 
 class PhotosSourceFactory(private val disposable: CompositeDisposable, private val orderBy: String): DataSource.Factory<String, Photos>() {
