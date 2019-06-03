@@ -211,7 +211,7 @@ class PhotoFragment : Fragment() {
             btn_bookmark.setOnClickListener {
                 if (!exists) {
                     roomViewModel.bookmarkPhoto(photo)
-                    Toast.makeText(context, "bookmark", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "bookmarked", Toast.LENGTH_SHORT).show()
                 } else {
                     roomViewModel.deletePhoto(photo)
                     Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show()
@@ -222,16 +222,19 @@ class PhotoFragment : Fragment() {
         btn_download.setOnClickListener {
             setupType = SetupType.DOWNLOAD
             downloadFile()
+            Toast.makeText(context, "Download stated", Toast.LENGTH_SHORT).show()
         }
 
         btn_set_wallpaper.setOnClickListener {
             setupType = SetupType.WALLPAPER
             downloadFile()
+            Toast.makeText(context, "Preparing", Toast.LENGTH_SHORT).show()
         }
 
         btn_share.setOnClickListener {
             setupType = SetupType.SHARE
             downloadFile()
+            Toast.makeText(context, "Preparing", Toast.LENGTH_SHORT).show()
         }
     }
 

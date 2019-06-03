@@ -17,103 +17,110 @@
     app:cardElevation="12dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <ImageView
-        android:id="@+id/drag_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|top"
-        android:clickable="true"
-        android:focusable="true"
-        android:src="@drawable/ic_drag_icon"
-        tools:ignore="ContentDescription" />
-
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/text_author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/text_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_location_pin"
-            android:drawablePadding="4dp"
-            android:gravity="center" />
-
-        <LinearLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btn_download"
+            <ImageView
+                android:id="@+id/drag_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="12dp"
-                android:src="@drawable/ic_download"
-                app:fabSize="normal" />
+                android:layout_gravity="center|top"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ic_drag_icon"
+                tools:ignore="ContentDescription" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btn_set_wallpaper"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="12dp"
-                android:src="@drawable/ic_wallpaper"
-                app:fabSize="normal" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="12dp">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btn_share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="12dp"
-                android:src="@drawable/ic_share"
-                app:fabSize="normal" />
+                <TextView
+                    android:id="@+id/text_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textStyle="bold" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btn_bookmark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="12dp"
-                android:src="@drawable/ic_bookmark"
-                app:fabSize="normal" />
+                <TextView
+                    android:id="@+id/text_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_location_pin"
+                    android:drawablePadding="4dp"
+                    android:gravity="center" />
 
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.8dp"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:background="@color/dividerColor" />
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btn_download"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:src="@drawable/ic_download"
+                        app:fabSize="normal" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/camera_info_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btn_set_wallpaper"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:src="@drawable/ic_wallpaper"
+                        app:fabSize="normal" />
 
-        <!--<androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_tags"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />-->
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btn_share"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:src="@drawable/ic_share"
+                        app:fabSize="normal" />
 
-        <com.google.android.material.chip.ChipGroup
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/chips_group"
-            android:layout_marginTop="12dp"/>
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btn_bookmark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:src="@drawable/ic_bookmark"
+                        app:fabSize="normal" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="20dp"
+                    android:background="@color/dividerColor" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/camera_info_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/chips_group"
+                    android:layout_marginTop="12dp"/>
 
 
-    </LinearLayout>
+            </LinearLayout>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.cardview.widget.CardView>

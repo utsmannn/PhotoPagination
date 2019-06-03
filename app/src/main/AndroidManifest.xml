@@ -4,8 +4,9 @@
     package="com.utsman.wallaz">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
 
     <application
         android:allowBackup="true"
@@ -17,8 +18,8 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,6 +36,18 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_provider" />
         </provider>
+
+        <service
+            android:name=".services.TileChangerServices"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@drawable/ic_changer"
+            android:label="Change Wallpaper"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
 
     </application>
 
