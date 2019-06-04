@@ -51,8 +51,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ChangerActivity"/>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.utsman.wallaz.fileprovider"
