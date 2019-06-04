@@ -1,3 +1,16 @@
+/*
+ * Copyright 2019 Muhammad Utsman. All rights reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.utsman.wallaz
 
 import android.content.Context
@@ -6,14 +19,15 @@ import android.net.Uri
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.FileProvider
 import androidx.paging.PagedList
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.io.File
+import android.graphics.Bitmap
+import android.util.Base64
+import java.io.ByteArrayOutputStream
+import android.graphics.BitmapFactory
+import androidx.browser.customtabs.CustomTabsIntent
+
 
 fun configPaged(size: Int): PagedList.Config = PagedList.Config.Builder()
     .setPageSize(size)
@@ -93,3 +107,26 @@ enum class SetupType {
     DOWNLOAD,
     SHARE
 }
+
+fun bitMapToString(bitmap: Bitmap): String {
+    val baos = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+    val b = baos.toByteArray()
+    return Base64.encodeToString(b, Base64.DEFAULT)
+}
+
+fun stringToBitMap(encodedString: String?): Bitmap? {
+    return try {
+        val encodeByte = Base64.decode(encodedString, Base64.DEFAULT)
+        BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
+    } catch (e: Exception) {
+        e.message
+        null
+    }
+}
+
+fun customTab(context: Context?): CustomTabsIntent = CustomTabsIntent.Builder()
+        .setToolbarColor(context!!.resources.getColor(R.color.colorPrimary))
+        .setShowTitle(true)
+        .build()
+

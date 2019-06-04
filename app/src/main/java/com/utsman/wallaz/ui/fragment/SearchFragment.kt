@@ -1,3 +1,16 @@
+/*
+ * Copyright 2019 Muhammad Utsman. All rights reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.utsman.wallaz.ui.fragment
 
 import android.os.Bundle
@@ -46,6 +59,8 @@ class SearchFragment : Fragment() {
     }
 
     private val searchAdapter = MainPagedAdapter()
+
+    private var needClear = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.search_fragment, container, false)
@@ -100,25 +115,31 @@ class SearchFragment : Fragment() {
 
         if (queryArgument != null) {
             fromChipClick(queryArgument!!)
+            needClear = true
         }
-
 
         setupChips()
 
         mainActivity.onBackPressedDispatcher.addCallback {
             try {
-                findNavController().navigateUp()
+                findNavController().popBackStack()
             } catch (e: Exception) {
                 Handler().postDelayed({
                     findNavController().popBackStack()
                 }, 1000)
             }
         }
+
+        if (needClear) {
+            searchAdapter.submitList(null)
+        }
     }
 
     private fun setupChips() {
         searchViewModel.getChips().observe(this, Observer { chips ->
-            chips.map { chip ->
+
+            chips.take(12).map {chip ->
+
                 val c = Chip(context)
                 c.text = chip.query
                 chips_group.addView(c)
@@ -134,6 +155,9 @@ class SearchFragment : Fragment() {
                     fromChipClick(chip.query)
                 }
             }
+            chips.map { chip ->
+
+            }
         })
     }
 
@@ -147,14 +171,14 @@ class SearchFragment : Fragment() {
 
         if (main_recycler_view != null) {
             listState = main_recycler_view.layoutManager?.onSaveInstanceState()
-            outState.putParcelable("save_main_recycler_view", listState)
+            outState.putParcelable("save_main_recycler_view_$queryArgument", listState)
         }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         if (savedInstanceState != null) {
-            listState = savedInstanceState.getParcelable("save_main_recycler_view")
+            listState = savedInstanceState.getParcelable("save_main_recycler_view_$queryArgument")
         }
     }
 

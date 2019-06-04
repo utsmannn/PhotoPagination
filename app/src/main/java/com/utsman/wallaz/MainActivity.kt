@@ -1,3 +1,16 @@
+/*
+ * Copyright 2019 Muhammad Utsman. All rights reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.utsman.wallaz
 
 import android.Manifest
@@ -59,13 +72,20 @@ class MainActivity : AppCompatActivity() {
                 }
                 .withSelectable(false)
 
+        val item5 = itemDrawer().withIdentifier(5)
+                .withName("One Click Change")
+                .withOnDrawerItemClickListener { view, position, drawerItem ->
+                    //findNavController(R.id.main_host_fragment_app).navigate(R.id.toOneClickChangerFragment)
+                    false
+                }
+
         drawer = DrawerBuilder()
             .withActivity(this)
-            .addDrawerItems(item1, item2, item3, DividerDrawerItem(), item4)
+            .addDrawerItems(item1, item2, item3, DividerDrawerItem(), item4, item5)
             .build()
 
         val view = LayoutInflater.from(this).inflate(R.layout.header_drawer, null)
-        drawer.setHeader(view, false, true, DimenHolder.fromDp(120))
+        drawer.setHeader(view, false, true, DimenHolder.fromDp(200))
 
     }
 

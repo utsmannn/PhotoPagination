@@ -1,3 +1,16 @@
+/*
+ * Copyright 2019 Muhammad Utsman. All rights reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.utsman.wallaz.services
 
 import android.app.DownloadManager
@@ -10,6 +23,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.Handler
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
@@ -26,11 +40,25 @@ import java.io.File
 class TileChangerServices : TileService() {
 
     private var file = File(Environment.getExternalStorageDirectory(), "/.wallaz/temp")
+    private var isTile = false
 
     private val onDownloadComplete  = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val wallpaper = BitmapFactory.decodeFile(file.absolutePath)
-            WallpaperManager.getInstance(context).setBitmap(wallpaper)
+            qsTile.state = Tile.STATE_INACTIVE
+            qsTile.label = "Change Wallpaper"
+            qsTile.updateTile()
+
+            if (isTile) {
+                val closePanel = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+                sendBroadcast(closePanel)
+
+                Handler().postDelayed({
+                    val wallpaper = BitmapFactory.decodeFile(file.absolutePath)
+                    WallpaperManager.getInstance(context).setBitmap(wallpaper)
+                }, 500)
+
+                isTile = false
+            }
         }
     }
 
@@ -42,13 +70,15 @@ class TileChangerServices : TileService() {
 
     override fun onClick() {
         super.onClick()
+        isTile = true
         Toast.makeText(applicationContext, "Changing start..", Toast.LENGTH_SHORT).show()
+
+        qsTile.state = Tile.STATE_ACTIVE
+        qsTile.label = "Changing start.."
+        qsTile.updateTile()
 
         val sharedPref = getSharedPreferences("changer_query", Context.MODE_PRIVATE)
         val query = sharedPref.getString("query", "")
-
-        val closePanel = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
-        sendBroadcast(closePanel)
 
         /**
          * Cannot make threading in Tile Services !
@@ -66,7 +96,10 @@ class TileChangerServices : TileService() {
                     }
 
                     override fun onError(anError: ANError?) {
-                        Log.e("DDDD", anError?.errorBody)
+                        Log.e("BANKE", anError?.errorBody)
+                        qsTile.state = Tile.STATE_INACTIVE
+                        qsTile.label = "Error: ${anError?.errorDetail}"
+                        qsTile.updateTile()
                     }
 
                 })
@@ -85,7 +118,10 @@ class TileChangerServices : TileService() {
 
     override fun onCreate() {
         super.onCreate()
-        registerReceiver(onDownloadComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+
+        val intentFilter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+        intentFilter.priority = 100000
+        registerReceiver(onDownloadComplete, intentFilter)
     }
 
     override fun onDestroy() {

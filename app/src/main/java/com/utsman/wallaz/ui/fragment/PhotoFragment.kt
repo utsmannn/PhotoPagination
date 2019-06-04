@@ -1,3 +1,16 @@
+/*
+ * Copyright 2019 Muhammad Utsman. All rights reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.utsman.wallaz.ui.fragment
 
 import android.annotation.SuppressLint
@@ -6,24 +19,29 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.os.TransactionTooLargeException
 import android.util.Log
 import android.view.*
+import android.view.autofill.AutofillId
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
+import androidx.transition.TransitionInflater
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.chip.Chip
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import com.utsman.wallaz.*
 import com.utsman.wallaz.data.NetworkState
 import com.utsman.wallaz.data.Photos
@@ -31,7 +49,6 @@ import com.utsman.wallaz.di.MainInjector
 import com.utsman.wallaz.di.RoomInjector
 import com.utsman.wallaz.ui.CameraInfo
 import kotlinx.android.synthetic.main.error_layout.*
-import kotlinx.android.synthetic.main.photo_bottom_sheet.*
 import kotlinx.android.synthetic.main.photo_fragment.*
 import java.io.File
 import java.lang.Exception
@@ -49,6 +66,10 @@ class PhotoFragment : Fragment() {
         MainInjector.injectPhotosViewModel(this)
     }
 
+    private val downloadViewModel by lazy {
+        MainInjector.injectDownloadPhotoViewModel(this)
+    }
+
     private val roomViewModel by lazy {
         RoomInjector.injectBookmarkViewModel(this, context!!)
     }
@@ -57,8 +78,20 @@ class PhotoFragment : Fragment() {
         File(Environment.getExternalStorageDirectory(), "/Wallaz/${photo.id}.jpg")
     }
 
-    private val sheetBehavior by lazy {
-        BottomSheetBehavior.from(bottom_sheet_layout)
+    private val fileTemp by lazy {
+        File(Environment.getExternalStorageDirectory(), "/.wallaz/${photo.id}.jpg")
+    }
+
+    private val linkWallpaper by lazy {
+        photo.url.regular
+    }
+
+    private val linkTemp by lazy {
+        photo.url.small
+    }
+
+    private val linkDownload by lazy {
+        photo.links.downloadLocation
     }
 
     private val textShare by lazy {
@@ -68,8 +101,8 @@ class PhotoFragment : Fragment() {
     private val onDownloadComplete = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (setupType) {
-                SetupType.WALLPAPER -> setupWallpaper(context, file)
-                SetupType.SHARE -> setupShare(context, file, textShare)
+                SetupType.WALLPAPER -> setupWallpaper(context, fileTemp)
+                SetupType.SHARE -> setupShare(context, fileTemp, textShare)
                 else -> {}
             }
         }
@@ -88,84 +121,85 @@ class PhotoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupContent()
 
-        photo_image_view.setOnScaleChangeListener { scaleFactor, focusX, focusY ->
-            sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        }
-
-        drag_indicator.setOnClickListener {
-            if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED
-                || sheetBehavior.state == BottomSheetBehavior.STATE_HIDDEN) sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            else sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-        }
-
         mainActivity.onBackPressedDispatcher.addCallback {
-            when {
-                sheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED -> {
-                    sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                }
-                sheetBehavior.state == BottomSheetBehavior.STATE_HIDDEN -> {
-                    sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                }
-                else -> try {
-                    findNavController().popBackStack()
-                } catch (e: Exception) {
-                    Handler().postDelayed({
-                        findNavController().popBackStack()
-                    }, 1000)
-                }
-            }
+            backListener()
+        }
+    }
+
+    private fun backListener() {
+        try {
+            findNavController().popBackStack()
+        } catch (e: Exception) {
+            Handler().postDelayed({
+                findNavController().popBackStack()
+            }, 1000)
         }
     }
 
     private fun setupContent() {
-        sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        photoViewModel.getPhotoById(arguments?.getString("photo_id")).observe(this, Observer { photo ->
+        info_container.visibility = View.GONE
+        val photoId = arguments?.getString("photo_id")
+        toolbar.inflateMenu(R.menu.photo_menu)
+
+        photoViewModel.getPhotoById(photoId).observe(this, Observer { photo ->
             this.photo = photo
 
-            Picasso.get().load(photo.url.regular).into(photo_image_view, object : Callback {
-                override fun onSuccess() {
-                    Handler().postDelayed({
-                        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                    }, 800)
-                }
+            context?.let { ctx ->
+                Glide.with(ctx)
+                        .load(photo.url.small)
+                        .onlyRetrieveFromCache(true)
+                        .into(photo_image_view)
+            }
 
-                override fun onError(e: Exception?) {
-                    progress_horizontal.visibility = View.GONE
-                }
+            photo_image_view.setOnClickListener {
+                val bundle = bundleOf("url" to photo.url.full, "color" to photo.color)
+                findNavController().navigate(R.id.toPhotoFullFragment, bundle)
+            }
 
-            })
-
-            setupBottomSheetContent()
+            setupMetaPhoto()
             setupBtn()
             setupCameraInfo()
             setupTag()
+            setupToolbar()
         })
 
         photoViewModel.getLoaderById().observe(this, Observer {networkState ->
             Log.i("AJIANG", networkState.msg)
 
-            /*if (networkState == NetworkState.FAILED) error_layout.visibility = View.VISIBLE
-            else error_layout.visibility = View.GONE*/
-
             when (networkState) {
                 NetworkState.LOADED -> {
+                    info_container.visibility = View.VISIBLE
                     progress_horizontal.visibility = View.GONE
                     error_layout.visibility = View.GONE
                 }
                 NetworkState.LOADING -> {
+                    info_container.visibility = View.GONE
                     progress_horizontal.visibility = View.VISIBLE
                     error_layout.visibility = View.GONE
                 }
                 NetworkState.FAILED -> {
+                    info_container.visibility = View.GONE
                     progress_horizontal.visibility = View.GONE
                     error_layout.visibility = View.VISIBLE
-                    bottom_sheet_layout.visibility = View.GONE
-                    sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
             }
         })
     }
 
+    private fun setupToolbar() {
+        toolbar.setNavigationIcon(R.drawable.ic_back)
+        toolbar.setNavigationOnClickListener {
+            backListener()
+        }
+        val menuLink = toolbar.menu.findItem(R.id.action_link)
+        menuLink.setOnMenuItemClickListener {
+            customTab(context).launchUrl(context, Uri.parse(photo.links.html))
+            Log.i("Link photo ${this::class.java.simpleName}:", photo.links.html)
+            true
+        }
+    }
+
+    @SuppressLint("Invalid ID 0x0000000")
     private fun setupTag() {
 
         val tags = photo.tags
@@ -240,31 +274,76 @@ class PhotoFragment : Fragment() {
 
     @SuppressLint("RestrictedApi")
     private fun downloadFile() {
-        val fileUri = Uri.fromFile(file)
-        val linkUri = photo.url.raw
+        when (setupType) {
+            SetupType.DOWNLOAD -> downloadViewModel.findDownloadUrl(linkDownload).observe(this, Observer { url ->
+                val request = DownloadManager.Request(Uri.parse(url))
+                        .setTitle("Photo by ${photo.user.name} on Unsplash")
+                        .setDescription("Downloading")
+                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        .setDestinationUri(Uri.fromFile(file))
+                        .setAllowedOverMetered(true)
+                        .setAllowedOverRoaming(true)
+                        .setVisibleInDownloadsUi(true)
+                request.allowScanningByMediaScanner()
 
-        val request = DownloadManager.Request(Uri.parse(linkUri))
-            .setTitle("Photo by ${photo.user.name}")
-            .setDescription("Downloading")
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationUri(fileUri)
-            .setAllowedOverMetered(true)
-            .setAllowedOverRoaming(true)
-            .setVisibleInDownloadsUi(true)
-        request.allowScanningByMediaScanner()
+                val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                downloadManager.enqueue(request)
 
-        val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        downloadManager.enqueue(request)
+            })
+            SetupType.WALLPAPER -> {
+                val request = DownloadManager.Request(Uri.parse(linkWallpaper))
+                        .setTitle("Photo by ${photo.user.name} on Unsplash")
+                        .setDescription("Downloading")
+                        .setDestinationUri(Uri.fromFile(fileTemp))
+                        .setAllowedOverMetered(true)
+                        .setAllowedOverRoaming(true)
+                request.allowScanningByMediaScanner()
+
+                val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                downloadManager.enqueue(request)
+            }
+            SetupType.SHARE -> {
+                val request = DownloadManager.Request(Uri.parse(linkTemp))
+                        .setTitle("Photo by ${photo.user.name} on Unsplash")
+                        .setDescription("Downloading")
+                        .setDestinationUri(Uri.fromFile(fileTemp))
+                        .setAllowedOverMetered(true)
+                        .setAllowedOverRoaming(true)
+                request.allowScanningByMediaScanner()
+
+                val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                downloadManager.enqueue(request)
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setupBottomSheetContent() {
-        text_author.textWithCheckEmptyHide("Photo by ${photo.user.name}")
+    private fun setupMetaPhoto() {
+        val appName = "wallaz"
+        val attrUser = "https://unsplash.com/@${photo.user.username}?utm_source=$appName&utm_medium=referral"
+        val attrUnsplash = "https://unsplash.com/?utm_source=$appName&utm_medium=referral"
+
+        text_author.text = photo.user.name
+        text_author.setOnClickListener {
+            customTab(context).launchUrl(context, Uri.parse(attrUser))
+            Log.i("attrUser", attrUser)
+        }
+        text_unsplash.setOnClickListener {
+            customTab(context).launchUrl(context, Uri.parse(attrUnsplash))
+            Log.i("attrUnsplash", attrUnsplash)
+        }
+
+
         text_location.textWithCheckEmptyHide(photo.location?.title)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         context?.unregisterReceiver(onDownloadComplete)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        //outState.clear()
     }
 }
