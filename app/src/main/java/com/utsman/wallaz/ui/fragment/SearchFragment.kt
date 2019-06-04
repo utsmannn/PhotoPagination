@@ -137,9 +137,7 @@ class SearchFragment : Fragment() {
 
     private fun setupChips() {
         searchViewModel.getChips().observe(this, Observer { chips ->
-
             chips.take(12).map {chip ->
-
                 val c = Chip(context)
                 c.text = chip.query
                 chips_group.addView(c)
@@ -154,9 +152,6 @@ class SearchFragment : Fragment() {
                 c.setOnClickListener {
                     fromChipClick(chip.query)
                 }
-            }
-            chips.map { chip ->
-
             }
         })
     }

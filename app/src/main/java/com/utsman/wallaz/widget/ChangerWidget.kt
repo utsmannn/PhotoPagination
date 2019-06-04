@@ -13,18 +13,49 @@
 
 package com.utsman.wallaz.widget
 
+import android.app.DownloadManager
+import android.app.PendingIntent
+import android.app.WallpaperManager
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Icon
+import android.net.Uri
+import android.os.Environment
+import android.util.Log
 import android.widget.RemoteViews
+import android.widget.Toast
+import com.androidnetworking.error.ANError
+import com.utsman.wallaz.MainActivity
 
 import com.utsman.wallaz.R
+import com.utsman.wallaz.data.Photos
+import com.utsman.wallaz.services.ChangerHelper
+import com.utsman.wallaz.services.IChanger
+import java.io.File
 
 /**
  * Implementation of App Widget functionality.
  */
+@Suppress("JAVA_CLASS_ON_COMPANION")
 class ChangerWidget : AppWidgetProvider() {
+
+    private val click = "wallaz"
+    private var file = File(Environment.getExternalStorageDirectory(), "/.wallaz/temp")
+
+    private val onDownloadComplete = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val wallpaper = BitmapFactory.decodeFile(file.absolutePath)
+            WallpaperManager.getInstance(context).setBitmap(wallpaper)
+
+            Log.i("BAAH", "dduh")
+        }
+
+    }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
@@ -34,10 +65,12 @@ class ChangerWidget : AppWidgetProvider() {
     }
 
     override fun onEnabled(context: Context) {
+        context.registerReceiver(onDownloadComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         // Enter relevant functionality for when the first widget is created
     }
 
     override fun onDisabled(context: Context) {
+        context.unregisterReceiver(onDownloadComplete)
         // Enter relevant functionality for when the last widget is disabled
     }
 
@@ -48,18 +81,16 @@ class ChangerWidget : AppWidgetProvider() {
             appWidgetId: Int
         ) {
 
+            val intent = Intent(context, MainActivity::class.java)
+            intent.putExtra("changer", true)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+
             val view = RemoteViews(context.packageName, R.layout.changer_widget)
-            view.setImageViewResource(R.id.img_icon, R.drawable.ic_changer_graph)
+            view.setOnClickPendingIntent(R.id.click_container, pendingIntent)
 
-            /*val widgetText = context.getString(R.string.appwidget_text)
-            // Construct the RemoteViews object
-            val views = RemoteViews(context.packageName, R.layout.changer_widget)
-            //views.setTextViewText(R.id.appwidget_text, widgetText)
+            appWidgetManager.updateAppWidget(appWidgetId, view)
 
-
-
-            // Instruct the widget manager to update the widget
-            appWidgetManager.updateAppWidget(appWidgetId, views)*/
         }
     }
 }
