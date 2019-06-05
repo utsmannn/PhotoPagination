@@ -35,6 +35,8 @@ import com.utsman.wallaz.MainActivity
 import com.utsman.wallaz.R
 import com.utsman.wallaz.data.Photos
 import com.utsman.wallaz.services.ChangerHelper
+import com.utsman.wallaz.services.ChangerIntent
+import com.utsman.wallaz.services.ChangerServices
 import com.utsman.wallaz.services.IChanger
 import java.io.File
 
@@ -44,7 +46,6 @@ import java.io.File
 @Suppress("JAVA_CLASS_ON_COMPANION")
 class ChangerWidget : AppWidgetProvider() {
 
-    private val click = "wallaz"
     private var file = File(Environment.getExternalStorageDirectory(), "/.wallaz/temp")
 
     private val onDownloadComplete = object : BroadcastReceiver() {
@@ -81,10 +82,12 @@ class ChangerWidget : AppWidgetProvider() {
             appWidgetId: Int
         ) {
 
-            val intent = Intent(context, MainActivity::class.java)
+            val intent = Intent(context, ChangerServices::class.java)
+            //intent.action = "com.utsman.wallaz.services.ChangerIntent"
             intent.putExtra("changer", true)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            //val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+            val pendingIntent = PendingIntent.getService(context, 0, intent, 0)
 
             val view = RemoteViews(context.packageName, R.layout.changer_widget)
             view.setOnClickPendingIntent(R.id.click_container, pendingIntent)

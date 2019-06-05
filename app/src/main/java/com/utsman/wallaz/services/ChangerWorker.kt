@@ -11,13 +11,16 @@
  * limitations under the License.
  */
 
-package com.utsman.wallaz.di
+package com.utsman.wallaz.services
 
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
-import com.utsman.wallaz.viewmodel.ChangerViewModel
+import android.content.Context
+import android.widget.Toast
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 
-object ChangerInjector {
-
-    fun injectChangerViewModel(fragment: Fragment) = ViewModelProviders.of(fragment).get(ChangerViewModel::class.java)
+class ChangerWorker(private val context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+    override fun doWork(): Result {
+        Toast.makeText(context, "ffff", Toast.LENGTH_SHORT).show()
+        return Result.success()
+    }
 }
