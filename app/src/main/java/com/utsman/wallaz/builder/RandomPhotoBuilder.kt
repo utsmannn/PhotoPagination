@@ -28,7 +28,10 @@ import com.utsman.wallaz.BuildConfig
 import com.utsman.wallaz.data.Photos
 import java.io.File
 
-
+/**
+ * Builder pattern using here for prevent redundant code
+ * This builder for get random photo which using some class
+ * */
 class RandomPhotoBuilder constructor(private val context: Context,
                                      private val query: String?,
                                      private val randomPhotoListener: RandomPhotoListener
