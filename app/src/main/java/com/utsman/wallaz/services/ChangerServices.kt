@@ -21,15 +21,19 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 
 class ChangerServices : Service() {
 
     private var isChanger = false
-    private lateinit var changerBuilder: ChangerBuilder.Builder
+    private lateinit var randomPhotoBuilder: RandomPhotoBuilder.Builder
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (isChanger) changerBuilder.receiverDownload(context)
+            if (isChanger) {
+                randomPhotoBuilder.receiverDownload(context)
+                isChanger = false
+            }
         }
     }
 
@@ -38,24 +42,25 @@ class ChangerServices : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         isChanger = true
-        changerBuilder = ChangerBuilder.Builder()
+        randomPhotoBuilder = RandomPhotoBuilder.Builder()
                 .with(this)
                 .query("city")
                 .folder("/.wallaz")
-                .listener(object : IChanger {
+                .listener(object : RandomPhotoListener {
                     override fun onLoad() {
                         Log.i("WAAH", "sukses")
+                        Toast.makeText(this@ChangerServices, "Changing start..", Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onError(errorMsg: String) {
                         Log.e("WAAH", errorMsg)
+                        Toast.makeText(this@ChangerServices, "Error: $errorMsg", Toast.LENGTH_SHORT).show()
                     }
 
                 })
 
-        changerBuilder.build()
+        randomPhotoBuilder.build()
 
         return super.onStartCommand(intent, flags, startId)
     }

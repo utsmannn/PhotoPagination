@@ -13,11 +13,7 @@
 
 package com.utsman.wallaz.services
 
-import com.androidnetworking.error.ANError
-import com.utsman.wallaz.data.Photos
-
-interface IChanger {
-
+interface RandomPhotoListener {
     fun onLoad()
     fun onError(errorMsg: String)
 }

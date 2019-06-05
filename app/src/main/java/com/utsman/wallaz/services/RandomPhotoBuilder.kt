@@ -16,6 +16,7 @@ package com.utsman.wallaz.services
 import android.app.DownloadManager
 import android.app.WallpaperManager
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
@@ -28,27 +29,27 @@ import com.utsman.wallaz.data.Photos
 import java.io.File
 
 
-class ChangerBuilder constructor(private val context: Context,
-                                 private val query: String,
-                                 private val iChanger: IChanger) {
+class RandomPhotoBuilder constructor(private val context: Context,
+                                     private val query: String?,
+                                     private val randomPhotoListener: RandomPhotoListener) {
 
     open class Builder {
 
         private lateinit var context: Context
-        private lateinit var query: String
+        private var query: String? = ""
         private lateinit var folder: String
-        private lateinit var iChanger: IChanger
+        private lateinit var randomPhotoListener: RandomPhotoListener
         private lateinit var file: File
 
         fun with(context: Context) = apply { this.context = context }
-        fun query(query: String) = apply { this.query = query }
+        fun query(query: String?) = apply { this.query = query }
         fun folder(folder: String) = apply { this.folder = folder }
-        fun listener(iChanger: IChanger) = apply { this.iChanger = iChanger }
+        fun listener(randomPhotoListener: RandomPhotoListener) = apply { this.randomPhotoListener = randomPhotoListener }
 
         /**
-         * Builder for services don't use threading !
+         * Builder for services don't use Rx threading !
          * */
-        fun build(): ChangerBuilder {
+        fun build(): RandomPhotoBuilder {
             file = File(Environment.getExternalStorageDirectory(), "$folder/temp")
             AndroidNetworking.get(BuildConfig.BASE_URL)
                     .addPathParameter("endpoint", "photos/random")
@@ -57,18 +58,18 @@ class ChangerBuilder constructor(private val context: Context,
                     .build()
                     .getAsObject(Photos::class.java, object : ParsedRequestListener<Photos> {
                         override fun onResponse(response: Photos) {
-                            iChanger.onLoad()
+                            randomPhotoListener.onLoad()
                             file = File(Environment.getExternalStorageDirectory(), "$folder/${response.id}.jpg")
                             downloadFile(response.url.regular, context, file)
                         }
 
                         override fun onError(anError: ANError) {
-                            iChanger.onError(anError.errorBody)
+                            randomPhotoListener.onError(anError.errorBody)
                         }
 
                     })
 
-            return ChangerBuilder(context, query, iChanger)
+            return RandomPhotoBuilder(context, query, randomPhotoListener)
         }
 
         private fun downloadFile(url: String, context: Context?, file: File) {
@@ -87,6 +88,10 @@ class ChangerBuilder constructor(private val context: Context,
             WallpaperManager.getInstance(context).setBitmap(wallpaper)
             Log.i("WOY", "ddddd")
         }
+
+        fun receiverBitmap(): Bitmap = BitmapFactory.decodeFile(file.absolutePath)
+
+        fun receiverFile(): File = file
 
     }
 

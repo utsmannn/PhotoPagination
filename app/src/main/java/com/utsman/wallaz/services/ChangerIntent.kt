@@ -56,7 +56,7 @@ class ChangerIntent : IntentService("changer") {
         //registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         //application.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         /*Log.i("BANGGGGG", "aaaaaaaaa")
-        ChangerBuilder("city", object : IChanger {
+        RandomPhotoBuilder("city", object : RandomPhotoListener {
             override fun onLoad(photos: Photos) {
                 isChanger = true
                 file = File(Environment.getExternalStorageDirectory(), "/.wallaz/${photos.id}.jpg")

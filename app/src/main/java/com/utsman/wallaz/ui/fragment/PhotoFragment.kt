@@ -19,32 +19,23 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.net.Uri
-import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
-import android.os.TransactionTooLargeException
+import android.os.*
 import android.util.Log
 import android.view.*
-import android.view.autofill.AutofillId
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.transition.TransitionInflater
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.chip.Chip
 import com.utsman.wallaz.*
 import com.utsman.wallaz.data.NetworkState
 import com.utsman.wallaz.data.Photos
+import com.utsman.wallaz.data.Tag
 import com.utsman.wallaz.di.MainInjector
 import com.utsman.wallaz.di.RoomInjector
 import com.utsman.wallaz.ui.CameraInfo
@@ -52,7 +43,12 @@ import kotlinx.android.synthetic.main.error_layout.*
 import kotlinx.android.synthetic.main.photo_fragment.*
 import java.io.File
 import java.lang.Exception
+import java.lang.IllegalStateException
 
+
+/**
+ * Injector always using lazy method
+ * */
 class PhotoFragment : Fragment() {
 
     private var setupType = SetupType.DOWNLOAD
@@ -98,6 +94,10 @@ class PhotoFragment : Fragment() {
         "Photo by ${photo.user.name}, get on Unsplash! \n${photo.links.html} \n\nSend from Wallaz - Amazing photos for you!"
     }
 
+
+    /**
+     * BroadcastReceiver for receiving download complete
+     * */
     private val onDownloadComplete = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (setupType) {
@@ -120,12 +120,15 @@ class PhotoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupContent()
-
         mainActivity.onBackPressedDispatcher.addCallback {
             backListener()
         }
     }
 
+
+    /**
+     * I don't understand different of popBackStack and navigateUp :p
+     * */
     private fun backListener() {
         try {
             findNavController().popBackStack()
@@ -136,11 +139,21 @@ class PhotoFragment : Fragment() {
         }
     }
 
+
     private fun setupContent() {
+        toolbar.inflateMenu(R.menu.photo_menu)
         info_container.visibility = View.GONE
         val photoId = arguments?.getString("photo_id")
-        toolbar.inflateMenu(R.menu.photo_menu)
 
+        /**
+         * using list chip to get constant size of chips
+         * */
+        val listChip: MutableList<Chip> = mutableListOf()
+
+
+        /**
+         * View Model always recall after back up
+         * */
         photoViewModel.getPhotoById(photoId).observe(this, Observer { photo ->
             this.photo = photo
 
@@ -159,7 +172,6 @@ class PhotoFragment : Fragment() {
             setupMetaPhoto()
             setupBtn()
             setupCameraInfo()
-            setupTag()
             setupToolbar()
         })
 
@@ -184,6 +196,32 @@ class PhotoFragment : Fragment() {
                 }
             }
         })
+
+
+        photoViewModel.getTags().observe(this, Observer { tags ->
+            tags.map { tag ->
+                val chip = Chip(chips_group.context)
+                chip.text = tag.title
+                listChip.add(chip)
+
+                chip.setOnClickListener {
+                    val bundle = bundleOf("query_argument" to tag.title)
+                    findNavController().navigate(R.id.toSearchFragmentFromPhoto, bundle)
+                }
+            }
+
+
+            /**
+             * To prevent error add view because I dont need remove view
+             * for each calling view model
+             * */
+            try {
+                listChip.map { c ->
+                    chips_group.addView(c)
+                }
+            } catch (e: IllegalStateException) {}
+
+        })
     }
 
     private fun setupToolbar() {
@@ -196,25 +234,6 @@ class PhotoFragment : Fragment() {
             customTab(context).launchUrl(context, Uri.parse(photo.links.html))
             Log.i("Link photo ${this::class.java.simpleName}:", photo.links.html)
             true
-        }
-    }
-
-    @SuppressLint("Invalid ID 0x0000000")
-    private fun setupTag() {
-
-        val tags = photo.tags
-        if (tags != null) {
-            for (tag in tags) {
-                val chip = Chip(chips_group.context)
-                chip.text = tag.title
-
-                chips_group.addView(chip)
-
-                chip.setOnClickListener {
-                    val bundle = bundleOf("query_argument" to tag.title)
-                    findNavController().navigate(R.id.toSearchFragmentFromPhoto, bundle)
-                }
-            }
         }
     }
 
@@ -340,10 +359,5 @@ class PhotoFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         context?.unregisterReceiver(onDownloadComplete)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        //outState.clear()
     }
 }

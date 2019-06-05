@@ -14,15 +14,25 @@
 package com.utsman.wallaz.ui.fragment
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.utsman.wallaz.MainActivity
 import com.utsman.wallaz.R
+import com.utsman.wallaz.di.MainInjector
 import kotlinx.android.synthetic.main.photo_full_fragment.*
+import java.lang.Exception
 
 class PhotoFullFragment : Fragment() {
+
+    private val mainActivity by lazy {
+        MainInjector.injectMainActivity(activity as MainActivity)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.photo_full_fragment, container, false)
@@ -34,12 +44,26 @@ class PhotoFullFragment : Fragment() {
         val url = arguments?.getString("url")
         val colorString = arguments?.getString("color")
 
-
         context?.let { ctx ->
             Glide.with(ctx)
                     .load(url)
                     .into(photo_full_view)
                     .waitForLayout()
+        }
+
+        /*mainActivity.onBackPressedDispatcher.addCallback {
+            backListener()
+        }*/
+    }
+
+
+    private fun backListener() {
+        try {
+            findNavController().navigateUp()
+        } catch (e: Exception) {
+            Handler().postDelayed({
+                findNavController().navigateUp()
+            }, 1000)
         }
     }
 }

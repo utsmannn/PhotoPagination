@@ -14,50 +14,37 @@
 package com.utsman.wallaz.services
 
 import android.app.DownloadManager
-import android.app.WallpaperManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.os.Handler
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import com.androidnetworking.AndroidNetworking
-import com.androidnetworking.error.ANError
-import com.androidnetworking.interfaces.ParsedRequestListener
-import com.utsman.wallaz.BuildConfig
-import com.utsman.wallaz.data.Photos
-import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.N)
 class TileChangerServices : TileService() {
 
-    private var file = File(Environment.getExternalStorageDirectory(), "/.wallaz/temp")
     private var isTile = false
+    private lateinit var randomPhotoBuilder: RandomPhotoBuilder.Builder
 
-    private val onDownloadComplete  = object : BroadcastReceiver() {
+    private val onDownloadComplete = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            qsTile.state = Tile.STATE_INACTIVE
-            qsTile.label = "Change Wallpaper"
-            qsTile.updateTile()
-
             if (isTile) {
+                isTile = false
                 val closePanel = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
                 sendBroadcast(closePanel)
+                qsTile.state = Tile.STATE_INACTIVE
+                qsTile.label = "Change Wallpaper"
+                qsTile.updateTile()
 
                 Handler().postDelayed({
-                    val wallpaper = BitmapFactory.decodeFile(file.absolutePath)
-                    WallpaperManager.getInstance(context).setBitmap(wallpaper)
-                }, 500)
-
-                isTile = false
+                    randomPhotoBuilder.receiverDownload(context)
+                }, 400)
             }
         }
     }
@@ -80,40 +67,26 @@ class TileChangerServices : TileService() {
         val sharedPref = getSharedPreferences("changer_query", Context.MODE_PRIVATE)
         val query = sharedPref.getString("query", "")
 
-        /**
-         * Cannot make threading in Tile Services !
-         * */
-        AndroidNetworking.get(BuildConfig.BASE_URL)
-                .addPathParameter("endpoint", "photos/random")
-                .addQueryParameter("query", query)
-                .addQueryParameter("client_id", BuildConfig.CLIENT_ID)
-                .build()
-                .getAsObject(Photos::class.java, object : ParsedRequestListener<Photos> {
-                    override fun onResponse(response: Photos) {
-                        Log.i("BANGEEE", response.url.regular)
-                        file = File(Environment.getExternalStorageDirectory(), "/.wallaz/${response.id}.jpg")
-                        downloadFile(response.url.regular)
+        isTile = true
+        randomPhotoBuilder = RandomPhotoBuilder.Builder()
+                .with(this)
+                .query(query)
+                .folder("/.wallaz")
+                .listener(object : RandomPhotoListener {
+                    override fun onLoad() {
+                        Log.i("PPP", "bisa")
                     }
 
-                    override fun onError(anError: ANError?) {
-                        Log.e("BANKE", anError?.errorBody)
+                    override fun onError(errorMsg: String) {
+                        Log.e("PPP", errorMsg)
                         qsTile.state = Tile.STATE_INACTIVE
-                        qsTile.label = "Error: ${anError?.errorDetail}"
+                        qsTile.label = "Error: $errorMsg"
                         qsTile.updateTile()
                     }
-
                 })
-    }
 
-    private fun downloadFile(url: String) {
-        val request = DownloadManager.Request(Uri.parse(url))
-                .setTitle("Preparing..")
-                .setDestinationUri(Uri.fromFile(file))
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(true)
+        randomPhotoBuilder.build()
 
-        val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        downloadManager.enqueue(request)
     }
 
     override fun onCreate() {

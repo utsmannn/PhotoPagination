@@ -16,24 +16,19 @@ package com.utsman.wallaz
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DownloadManager
-import android.app.WallpaperManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
-import android.service.quicksettings.Tile
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -44,11 +39,41 @@ import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.holder.DimenHolder
 import com.mikepenz.materialdrawer.model.DividerDrawerItem
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
+import com.utsman.wallaz.services.RandomPhotoListener
+import com.utsman.wallaz.services.RandomPhotoBuilder
+import kotlinx.android.synthetic.main.header_drawer.view.*
 
+@SuppressLint("InflateParams")
 class MainActivity : AppCompatActivity() {
 
     private val PERMISSION_REQUEST = 1
     private lateinit var drawer: Drawer
+
+    private var isHeader = false
+    private var randomPhotoBuilder: RandomPhotoBuilder.Builder? = null
+
+    private val headerView by lazy {
+        LayoutInflater.from(this).inflate(R.layout.header_drawer, null)
+    }
+
+    private val imgReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (isHeader) {
+                isHeader = false
+                headerView.img_header.setImageBitmap(randomPhotoBuilder?.receiverBitmap())
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        registerReceiver(imgReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(imgReceiver)
+    }
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,20 +109,36 @@ class MainActivity : AppCompatActivity() {
                 }
                 .withSelectable(false)
 
-        val item5 = itemDrawer().withIdentifier(5)
-                .withName("One Click Change")
-                .withOnDrawerItemClickListener { view, position, drawerItem ->
-                    //findNavController(R.id.main_host_fragment_app).navigate(R.id.toOneClickChangerFragment)
-                    false
-                }
-
         drawer = DrawerBuilder()
                 .withActivity(this)
-                .addDrawerItems(item1, item2, item3, DividerDrawerItem(), item4, item5)
+                .addDrawerItems(DividerDrawerItem(), item1, item2, item3, DividerDrawerItem(), item4)
                 .build()
 
-        val view = LayoutInflater.from(this).inflate(R.layout.header_drawer, null)
-        drawer.setHeader(view, false, true, DimenHolder.fromDp(200))
+        drawer.setSelection(1)
+
+        drawer.setHeader(headerView, false, true, DimenHolder.fromDp(200))
+        setupHeader()
+    }
+
+    private fun setupHeader() {
+
+        randomPhotoBuilder = RandomPhotoBuilder.Builder()
+                .with(this)
+                .folder("/.wallaz")
+                .query("girls")
+                .listener(object : RandomPhotoListener {
+                    override fun onLoad() {
+                        isHeader = true
+                        Log.i("PPPP", "sukses")
+                    }
+
+                    override fun onError(errorMsg: String) {
+                        Log.e("PPP", errorMsg)
+                    }
+
+                })
+
+        randomPhotoBuilder?.build()
     }
 
     private fun setupWindow() {

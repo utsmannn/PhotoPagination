@@ -13,7 +13,9 @@
 
 package com.utsman.wallaz.data
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 data class Urls(@SerializedName("raw") val raw: String,
                 @SerializedName("full") val full: String,
@@ -53,7 +55,8 @@ data class PhotoLocation(@SerializedName("title") val title: String,
                          @SerializedName("city") val city: String,
                          @SerializedName("country") val country: String)
 
-data class Tag(@SerializedName("title") val title: String)
+@Parcelize
+data class Tag(@SerializedName("title") val title: String) : Parcelable
 
 data class Photos(@SerializedName("id") val id: String,
                   @SerializedName("created_at") val createdAt: String,

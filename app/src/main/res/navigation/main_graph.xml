@@ -86,7 +86,7 @@
 
         <action android:id="@+id/toPhotoFullFragment"
             app:destination="@id/toPhotoFullFragment"
-            app:launchSingleTop="true"
+            app:launchSingleTop="false"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_enter_anim"

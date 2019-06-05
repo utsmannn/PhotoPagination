@@ -24,6 +24,7 @@ import com.utsman.wallaz.BuildConfig
 import com.utsman.wallaz.configPaged
 import com.utsman.wallaz.data.NetworkState
 import com.utsman.wallaz.data.Photos
+import com.utsman.wallaz.data.Tag
 import com.utsman.wallaz.data.paged.PhotosDataSource
 import com.utsman.wallaz.data.factory.PhotosSourceFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -34,6 +35,7 @@ class PhotosViewModel : BaseViewModel() {
     private var photosSourceFactory: PhotosSourceFactory? = null
     private val photo: MutableLiveData<Photos> = MutableLiveData()
     private val loader: MutableLiveData<NetworkState> = MutableLiveData()
+    private val tags: MutableLiveData<List<Tag>> = MutableLiveData()
 
 
     fun getPhotos(orderBy: String): LiveData<PagedList<Photos>> {
@@ -61,6 +63,7 @@ class PhotosViewModel : BaseViewModel() {
                         .subscribe({ photo ->
                             this.photo.postValue(photo)
                             Log.i("ANJAYLAHHHH", photo.url.full)
+                            tags.postValue(photo.tags)
                             loader.postValue(NetworkState.LOADED)
 
                         }, {
@@ -70,6 +73,8 @@ class PhotosViewModel : BaseViewModel() {
 
         return photo
     }
+
+    fun getTags(): LiveData<List<Tag>> = tags
 
     fun getLoaderById(): LiveData<NetworkState> = loader
 }

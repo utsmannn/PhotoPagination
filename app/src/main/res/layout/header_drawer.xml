@@ -12,11 +12,19 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout
+<RelativeLayout
     android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="200dp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/img_header"
+        android:tint="#46FFFFFF"
+        android:tintMode="src_atop"
+        android:scaleType="centerCrop"/>
 
     <View
         android:layout_width="match_parent"
@@ -24,7 +32,7 @@
         android:background="@color/tintBg"
         android:translationZ="20dp" />
 
-    <LinearLayout
+    <!--<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -46,6 +54,6 @@
             android:text="Amazing photos from Unsplash for you!"
             android:textSize="18sp"/>
 
-    </LinearLayout>
+    </LinearLayout>-->
 
-</LinearLayout>
+</RelativeLayout>
