@@ -80,20 +80,29 @@ class TileChangerServices : TileService() {
         val sharedPref = getSharedPreferences("changer_query", Context.MODE_PRIVATE)
         val query = sharedPref.getString("query", "")
 
-        ChangerHelper(query, object : IChanger {
-            override fun onLoad(photos: Photos) {
-                Log.i("BANGEEE", photos.url.regular)
-                file = File(Environment.getExternalStorageDirectory(), "/.wallaz/${photos.id}.jpg")
-                downloadFile(photos.url.regular)
-            }
+        /**
+         * Cannot make threading in Tile Services !
+         * */
+        AndroidNetworking.get(BuildConfig.BASE_URL)
+                .addPathParameter("endpoint", "photos/random")
+                .addQueryParameter("query", query)
+                .addQueryParameter("client_id", BuildConfig.CLIENT_ID)
+                .build()
+                .getAsObject(Photos::class.java, object : ParsedRequestListener<Photos> {
+                    override fun onResponse(response: Photos) {
+                        Log.i("BANGEEE", response.url.regular)
+                        file = File(Environment.getExternalStorageDirectory(), "/.wallaz/${response.id}.jpg")
+                        downloadFile(response.url.regular)
+                    }
 
-            override fun onError(anError: ANError) {
-                Log.e("BANKE", anError.errorBody)
-                qsTile.state = Tile.STATE_INACTIVE
-                qsTile.label = "Error: ${anError.errorDetail}"
-                qsTile.updateTile()
-            }
-        }).getRandomWallpaper()
+                    override fun onError(anError: ANError?) {
+                        Log.e("BANKE", anError?.errorBody)
+                        qsTile.state = Tile.STATE_INACTIVE
+                        qsTile.label = "Error: ${anError?.errorDetail}"
+                        qsTile.updateTile()
+                    }
+
+                })
     }
 
     private fun downloadFile(url: String) {

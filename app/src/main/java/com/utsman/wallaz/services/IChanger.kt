@@ -18,6 +18,6 @@ import com.utsman.wallaz.data.Photos
 
 interface IChanger {
 
-    fun onLoad(photos: Photos)
-    fun onError(anError: ANError)
+    fun onLoad()
+    fun onError(errorMsg: String)
 }

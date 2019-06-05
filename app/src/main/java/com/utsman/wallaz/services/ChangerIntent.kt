@@ -56,7 +56,7 @@ class ChangerIntent : IntentService("changer") {
         //registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         //application.registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         /*Log.i("BANGGGGG", "aaaaaaaaa")
-        ChangerHelper("city", object : IChanger {
+        ChangerBuilder("city", object : IChanger {
             override fun onLoad(photos: Photos) {
                 isChanger = true
                 file = File(Environment.getExternalStorageDirectory(), "/.wallaz/${photos.id}.jpg")
@@ -74,7 +74,7 @@ class ChangerIntent : IntentService("changer") {
             override fun onError(anError: ANError) {
                 Log.e("error", anError.errorBody)
             }
-        }).getRandomWallpaper()*/
+        }).start()*/
     }
 
     override fun onStart(intent: Intent?, startId: Int) {

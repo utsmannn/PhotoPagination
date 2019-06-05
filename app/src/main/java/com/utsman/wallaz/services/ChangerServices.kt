@@ -15,33 +15,21 @@ package com.utsman.wallaz.services
 
 import android.app.DownloadManager
 import android.app.Service
-import android.app.WallpaperManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.BitmapFactory
-import android.net.Uri
-import android.os.Environment
 import android.os.IBinder
 import android.util.Log
-import com.androidnetworking.error.ANError
-import com.utsman.wallaz.data.Photos
-import java.io.File
 
 class ChangerServices : Service() {
 
-    private var file = File(Environment.getExternalStorageDirectory(), "/.wallaz/temp")
     private var isChanger = false
+    private lateinit var changerBuilder: ChangerBuilder.Builder
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (isChanger) {
-                isChanger = false
-                val wallpaper = BitmapFactory.decodeFile(file.absolutePath)
-                WallpaperManager.getInstance(context).setBitmap(wallpaper)
-                Log.i("WOY", "ddddd")
-            }
+            if (isChanger) changerBuilder.receiverDownload(context)
         }
     }
 
@@ -51,25 +39,23 @@ class ChangerServices : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        ChangerHelper("city", object : IChanger {
-            override fun onLoad(photos: Photos) {
-                isChanger = true
-                file = File(Environment.getExternalStorageDirectory(), "/.wallaz/${photos.id}.jpg")
-                val request = DownloadManager.Request(Uri.parse(photos.url.regular))
-                        .setTitle("Preparing..")
-                        .setDestinationUri(Uri.fromFile(file))
-                        .setAllowedOverMetered(true)
-                        .setAllowedOverRoaming(true)
+        isChanger = true
+        changerBuilder = ChangerBuilder.Builder()
+                .with(this)
+                .query("city")
+                .folder("/.wallaz")
+                .listener(object : IChanger {
+                    override fun onLoad() {
+                        Log.i("WAAH", "sukses")
+                    }
 
-                val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                downloadManager.enqueue(request)
-                Log.i("BANGKEEEEE", "dwonload start")
-            }
+                    override fun onError(errorMsg: String) {
+                        Log.e("WAAH", errorMsg)
+                    }
 
-            override fun onError(anError: ANError) {
-                Log.e("error", anError.errorBody)
-            }
-        }).getRandomWallpaper()
+                })
+
+        changerBuilder.build()
 
         return super.onStartCommand(intent, flags, startId)
     }

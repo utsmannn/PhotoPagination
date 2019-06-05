@@ -23,21 +23,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Icon
-import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import android.widget.RemoteViews
-import android.widget.Toast
-import com.androidnetworking.error.ANError
-import com.utsman.wallaz.MainActivity
 
 import com.utsman.wallaz.R
-import com.utsman.wallaz.data.Photos
-import com.utsman.wallaz.services.ChangerHelper
-import com.utsman.wallaz.services.ChangerIntent
 import com.utsman.wallaz.services.ChangerServices
-import com.utsman.wallaz.services.IChanger
 import java.io.File
 
 /**
@@ -83,10 +74,7 @@ class ChangerWidget : AppWidgetProvider() {
         ) {
 
             val intent = Intent(context, ChangerServices::class.java)
-            //intent.action = "com.utsman.wallaz.services.ChangerIntent"
             intent.putExtra("changer", true)
-            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            //val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
             val pendingIntent = PendingIntent.getService(context, 0, intent, 0)
 
             val view = RemoteViews(context.packageName, R.layout.changer_widget)
