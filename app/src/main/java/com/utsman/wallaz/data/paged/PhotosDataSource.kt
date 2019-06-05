@@ -31,6 +31,9 @@ class PhotosDataSource(private val disposable: CompositeDisposable, private val 
     private var nextPage: Long = 1
     val networkState = MutableLiveData<NetworkState>()
 
+    /**
+     * Create rx function for using in loader function
+     * */
     private fun rxNetwork(page: Long) = Rx2AndroidNetworking.get(BuildConfig.BASE_URL)
             .addPathParameter("endpoint", "photos")
             .addQueryParameter("page", page.toString())
@@ -73,7 +76,7 @@ class PhotosDataSource(private val disposable: CompositeDisposable, private val 
                         .doOnNext {
                             nextPage++
                         }
-                        .delay(300, TimeUnit.MILLISECONDS)
+                        .delay(300, TimeUnit.MILLISECONDS) // Delay 300 milli second after receiving previous data
                         .subscribe({ photos ->
                             callback.onResult(photos)
                             networkState.postValue(NetworkState.LOADED)

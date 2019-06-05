@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-package com.utsman.wallaz.services
+package com.utsman.wallaz.builder
 
 interface RandomPhotoListener {
     fun onLoad()

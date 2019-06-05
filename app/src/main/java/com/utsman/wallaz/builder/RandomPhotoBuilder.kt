@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-package com.utsman.wallaz.services
+package com.utsman.wallaz.builder
 
 import android.app.DownloadManager
 import android.app.WallpaperManager
@@ -31,7 +31,8 @@ import java.io.File
 
 class RandomPhotoBuilder constructor(private val context: Context,
                                      private val query: String?,
-                                     private val randomPhotoListener: RandomPhotoListener) {
+                                     private val randomPhotoListener: RandomPhotoListener
+) {
 
     open class Builder {
 

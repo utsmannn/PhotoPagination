@@ -28,7 +28,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -39,8 +38,8 @@ import com.mikepenz.materialdrawer.DrawerBuilder
 import com.mikepenz.materialdrawer.holder.DimenHolder
 import com.mikepenz.materialdrawer.model.DividerDrawerItem
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
-import com.utsman.wallaz.services.RandomPhotoListener
-import com.utsman.wallaz.services.RandomPhotoBuilder
+import com.utsman.wallaz.builder.RandomPhotoListener
+import com.utsman.wallaz.builder.RandomPhotoBuilder
 import kotlinx.android.synthetic.main.header_drawer.view.*
 
 @SuppressLint("InflateParams")

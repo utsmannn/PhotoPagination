@@ -25,6 +25,8 @@ import android.service.quicksettings.TileService
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.utsman.wallaz.builder.RandomPhotoBuilder
+import com.utsman.wallaz.builder.RandomPhotoListener
 
 @RequiresApi(Build.VERSION_CODES.N)
 class TileChangerServices : TileService() {

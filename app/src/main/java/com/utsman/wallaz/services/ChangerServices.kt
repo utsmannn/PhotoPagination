@@ -22,6 +22,8 @@ import android.content.IntentFilter
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import com.utsman.wallaz.builder.RandomPhotoBuilder
+import com.utsman.wallaz.builder.RandomPhotoListener
 
 class ChangerServices : Service() {
 
