@@ -27,7 +27,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.utsman.wallaz.R
-import com.utsman.wallaz.bitMapToString
 import com.utsman.wallaz.db.PhotoRoom
 import kotlinx.android.synthetic.main.item_photo_card.view.*
 

@@ -116,11 +116,10 @@ class MainActivity : AppCompatActivity() {
         drawer.setSelection(1)
 
         drawer.setHeader(headerView, false, true, DimenHolder.fromDp(200))
-        setupHeader()
+
     }
 
     private fun setupHeader() {
-
         randomPhotoBuilder = RandomPhotoBuilder.Builder()
                 .with(this)
                 .folder("/.wallaz")
@@ -134,7 +133,6 @@ class MainActivity : AppCompatActivity() {
                     override fun onError(errorMsg: String) {
                         Log.e("PPP", errorMsg)
                     }
-
                 })
 
         randomPhotoBuilder?.build()
@@ -174,6 +172,10 @@ class MainActivity : AppCompatActivity() {
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), PERMISSION_REQUEST)
         } else {
+            /**
+             * Setup header get random photo required permission request
+             * */
+            setupHeader()
         }
     }
 
@@ -181,6 +183,10 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             PERMISSION_REQUEST -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    /**
+                     * setup header here
+                     * */
+                    setupHeader()
                 } else {
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
                     finish()

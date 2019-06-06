@@ -352,7 +352,6 @@ class PhotoFragment : Fragment() {
             Log.i("attrUnsplash", attrUnsplash)
         }
 
-
         text_location.textWithCheckEmptyHide(photo.location?.title)
     }
 

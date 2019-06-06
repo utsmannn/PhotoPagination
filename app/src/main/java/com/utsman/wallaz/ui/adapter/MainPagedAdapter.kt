@@ -13,8 +13,6 @@
 
 package com.utsman.wallaz.ui.adapter
 
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,10 +24,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.utsman.wallaz.R
-import com.utsman.wallaz.bitMapToString
 import com.utsman.wallaz.data.Photos
 import kotlinx.android.synthetic.main.item_photo_card.view.*
 
