@@ -50,10 +50,6 @@ class PhotoFullFragment : Fragment() {
                     .into(photo_full_view)
                     .waitForLayout()
         }
-
-        /*mainActivity.onBackPressedDispatcher.addCallback {
-            backListener()
-        }*/
     }
 
 

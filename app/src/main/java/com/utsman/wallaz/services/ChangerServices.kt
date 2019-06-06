@@ -59,7 +59,6 @@ class ChangerServices : Service() {
                         Log.e("WAAH", errorMsg)
                         Toast.makeText(this@ChangerServices, "Error: $errorMsg", Toast.LENGTH_SHORT).show()
                     }
-
                 })
 
         randomPhotoBuilder.build()

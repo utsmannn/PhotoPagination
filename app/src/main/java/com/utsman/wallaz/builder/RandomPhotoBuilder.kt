@@ -32,9 +32,10 @@ import java.io.File
  * Builder pattern using here for prevent redundant code
  * This builder for get random photo which using some class
  * */
-class RandomPhotoBuilder constructor(private val context: Context,
-                                     private val query: String?,
-                                     private val randomPhotoListener: RandomPhotoListener
+class RandomPhotoBuilder constructor(
+    private val context: Context,
+    private val query: String?,
+    private val randomPhotoListener: RandomPhotoListener
 ) {
 
     open class Builder {
@@ -48,7 +49,8 @@ class RandomPhotoBuilder constructor(private val context: Context,
         fun with(context: Context) = apply { this.context = context }
         fun query(query: String?) = apply { this.query = query }
         fun folder(folder: String) = apply { this.folder = folder }
-        fun listener(randomPhotoListener: RandomPhotoListener) = apply { this.randomPhotoListener = randomPhotoListener }
+        fun listener(randomPhotoListener: RandomPhotoListener) =
+            apply { this.randomPhotoListener = randomPhotoListener }
 
         /**
          * Builder for services don't use Rx threading !
@@ -56,32 +58,31 @@ class RandomPhotoBuilder constructor(private val context: Context,
         fun build(): RandomPhotoBuilder {
             file = File(Environment.getExternalStorageDirectory(), "$folder/temp")
             AndroidNetworking.get(BuildConfig.BASE_URL)
-                    .addPathParameter("endpoint", "photos/random")
-                    .addQueryParameter("query", query)
-                    .addQueryParameter("client_id", BuildConfig.CLIENT_ID)
-                    .build()
-                    .getAsObject(Photos::class.java, object : ParsedRequestListener<Photos> {
-                        override fun onResponse(response: Photos) {
-                            randomPhotoListener.onLoad()
-                            file = File(Environment.getExternalStorageDirectory(), "$folder/${response.id}.jpg")
-                            downloadFile(response.url.regular, context, file)
-                        }
+                .addPathParameter("endpoint", "photos/random")
+                .addQueryParameter("query", query)
+                .addQueryParameter("client_id", BuildConfig.CLIENT_ID)
+                .build()
+                .getAsObject(Photos::class.java, object : ParsedRequestListener<Photos> {
+                    override fun onResponse(response: Photos) {
+                        randomPhotoListener.onLoad()
+                        file = File(Environment.getExternalStorageDirectory(), "$folder/${response.id}.jpg")
+                        downloadFile(response.url.regular, context, file)
+                    }
 
-                        override fun onError(anError: ANError) {
-                            randomPhotoListener.onError(anError.errorBody)
-                        }
-
-                    })
+                    override fun onError(anError: ANError) {
+                        randomPhotoListener.onError(anError.errorBody)
+                    }
+                })
 
             return RandomPhotoBuilder(context, query, randomPhotoListener)
         }
 
         private fun downloadFile(url: String, context: Context?, file: File) {
             val request = DownloadManager.Request(Uri.parse(url))
-                    .setTitle("Preparing..")
-                    .setDestinationUri(Uri.fromFile(file))
-                    .setAllowedOverMetered(true)
-                    .setAllowedOverRoaming(true)
+                .setTitle("Preparing..")
+                .setDestinationUri(Uri.fromFile(file))
+                .setAllowedOverMetered(true)
+                .setAllowedOverRoaming(true)
 
             val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             downloadManager.enqueue(request)
@@ -94,7 +95,6 @@ class RandomPhotoBuilder constructor(private val context: Context,
         }
 
         fun receiverBitmap(): Bitmap = BitmapFactory.decodeFile(file.absolutePath)
-
         fun receiverFile(): File = file
 
     }

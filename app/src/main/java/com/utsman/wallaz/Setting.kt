@@ -108,7 +108,12 @@ enum class SetupType {
     SHARE
 }
 
-fun bitMapToString(bitmap: Bitmap): String {
+fun customTab(context: Context?): CustomTabsIntent = CustomTabsIntent.Builder()
+        .setToolbarColor(context!!.resources.getColor(R.color.colorPrimary))
+        .setShowTitle(true)
+        .build()
+
+/*fun bitMapToString(bitmap: Bitmap): String {
     val baos = ByteArrayOutputStream()
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
     val b = baos.toByteArray()
@@ -123,10 +128,5 @@ fun stringToBitMap(encodedString: String?): Bitmap? {
         e.message
         null
     }
-}
-
-fun customTab(context: Context?): CustomTabsIntent = CustomTabsIntent.Builder()
-        .setToolbarColor(context!!.resources.getColor(R.color.colorPrimary))
-        .setShowTitle(true)
-        .build()
+}*/
 

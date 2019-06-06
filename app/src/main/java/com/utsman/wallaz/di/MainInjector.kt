@@ -23,7 +23,6 @@ import com.utsman.wallaz.viewmodel.PhotosViewModel
 import com.utsman.wallaz.viewmodel.SearchViewModel
 
 object MainInjector {
-
     fun injectMainActivity(activity: Activity) = activity as MainActivity
     fun injectPhotosViewModel(fragment: Fragment) = ViewModelProviders.of(fragment).get(PhotosViewModel::class.java)
     fun injectDownloadPhotoViewModel(fragment: Fragment) = ViewModelProviders.of(fragment).get(DownloadViewModel::class.java)

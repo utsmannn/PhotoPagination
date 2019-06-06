@@ -73,8 +73,6 @@
             </intent-filter>
         </service>
 
-        <service android:name=".services.ChangerIntent"
-            android:exported="false"/>
         <service android:name=".services.ChangerServices"
             android:exported="false"/>
 
